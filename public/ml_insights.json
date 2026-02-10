@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-02-08T13:41:57.999470",
+  "forecast_next_month": 6610.62,
+  "anomalies": [
+    {
+      "amount": 5,
+      "date": "2026-02-04",
+      "category": "Food",
+      "description": "Demo Transaction 4-0",
+      "merchant": "Merchant Food 0",
+      "anomaly": -1
+    },
+    {
+      "amount": 5,
+      "date": "2026-01-18",
+      "category": "Food",
+      "description": "Demo Transaction 21-0",
+      "merchant": "Merchant Food 0",
+      "anomaly": -1
+    },
+    {
+      "amount": 500,
+      "date": "2026-02-06",
+      "category": "Shopping",
+      "description": "Impulse buy",
+      "merchant": "Luxury Brand Store",
+      "anomaly": -1
+    }
+  ],
+  "category_spend": {
+    "Entertainment": 258,
+    "Food": 1109,
+    "Shopping": 500
+  }
+}
