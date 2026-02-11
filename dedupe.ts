@@ -6,10 +6,10 @@ function deduplicate() {
     console.log("Deduplicating categories...");
 
     // 1. Get all categories
-    const allCats = db.prepare('SELECT * FROM categories').all();
-    const seen = new Set();
-    const toDelete = [];
-    const validMap = new Map(); // name -> id of the one we keep
+    const allCats = db.prepare('SELECT * FROM categories').all() as { id: number; name: string }[];
+    const seen = new Set<string>();
+    const toDelete: number[] = [];
+    const validMap = new Map<string, number>(); // name -> id of the one we keep
 
     for (const cat of allCats) {
         if (seen.has(cat.name)) {
@@ -30,12 +30,12 @@ function deduplicate() {
         // We just need to make sure the IDs in categories table are clean.
 
         const deleteStmt = db.prepare('DELETE FROM categories WHERE id = ?');
-        const transaction = db.transaction(() => {
-            for (const id of toDelete) {
+        const transaction = db.transaction((ids: number[]) => {
+            for (const id of ids) {
                 deleteStmt.run(id);
             }
         });
-        transaction();
+        transaction(toDelete);
         console.log("Deleted duplicates.");
     }
 
