@@ -33,9 +33,6 @@ export function TransactionList({ transactions, showDelete = false, showCategori
         setIsMounted(true);
     }, []);
 
-    if (!transactions || transactions.length === 0) {
-        return <EmptyState hasAiKey={hasAiKey} />;
-    }
 
     const handleDelete = async (id: string) => {
         if (confirmDelete !== id) {
@@ -90,7 +87,7 @@ export function TransactionList({ transactions, showDelete = false, showCategori
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `spendwise-export-${new Date().toISOString().split('T')[0]}.${format}`;
+        a.download = `flowly-export-${new Date().toISOString().split('T')[0]}.${format}`;
         a.click();
         URL.revokeObjectURL(url);
     };
@@ -102,6 +99,10 @@ export function TransactionList({ transactions, showDelete = false, showCategori
             return !t.deleted_at && matchesSearch;
         });
     }, [transactions, searchQuery]);
+
+    if (!transactions || transactions.length === 0) {
+        return <EmptyState hasAiKey={hasAiKey} />;
+    }
 
     return (
         <div className="space-y-8">
@@ -122,15 +123,17 @@ export function TransactionList({ transactions, showDelete = false, showCategori
             {showCategories && (
                 <div className="flex bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 p-1 rounded-2xl overflow-x-auto no-scrollbar">
                     {["All", ...COMMON_CATEGORIES].map(cat => (
-                        <button
+                        <motion.button
                             key={cat}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => setFilterCategory(cat)}
                             className={`px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] whitespace-nowrap transition-all ${filterCategory === cat
                                 ? 'bg-white dark:bg-zinc-800 text-emerald-600 shadow-sm'
                                 : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'}`}
                         >
                             {cat}
-                        </button>
+                        </motion.button>
                     ))}
                 </div>
             )}
@@ -151,6 +154,7 @@ export function TransactionList({ transactions, showDelete = false, showCategori
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20, transition: { duration: 0.2 } }}
+                            whileHover={{ y: -2, x: 4, scale: 1.002 }}
                             transition={{
                                 type: "spring",
                                 stiffness: 500,

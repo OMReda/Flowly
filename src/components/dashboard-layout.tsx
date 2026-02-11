@@ -66,10 +66,6 @@ export function DashboardLayout({
     useEffect(() => {
         if (dismissed) return;
 
-        console.log("[CLIENT] DashboardLayout: checking onboarding status", {
-            hasProfile: !!userProfile,
-            completed: userProfile?.onboarding_completed
-        });
         if (userProfile && userProfile.onboarding_completed === false) {
             setShowOnboarding(true);
         }
@@ -109,7 +105,7 @@ export function DashboardLayout({
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-zinc-950 font-sans text-zinc-900 dark:text-zinc-100 transition-colors duration-500">
+        <div className="min-h-screen bg-white dark:bg-zinc-950 font-sans text-zinc-900 dark:text-zinc-100 transition-colors duration-500" data-developer="OMRed">
             <div className="p-4 sm:p-8 lg:p-12 max-w-6xl mx-auto space-y-12">
 
                 {/* Header */}
@@ -123,7 +119,7 @@ export function DashboardLayout({
                         <div>
                             <h1 className="text-4xl font-serif tracking-tight text-zinc-900 dark:text-zinc-50">Dashboard</h1>
                             <p className="text-[10px] tracking-[0.2em] font-bold text-zinc-400 uppercase mt-1">
-                                Refined Financial Control
+                                Fluid Financial Control
                             </p>
                             <div className="flex items-center gap-2 mt-2">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -169,7 +165,8 @@ export function DashboardLayout({
                     transition={{ delay: 0.1 }}
                     className="relative z-10"
                 >
-                    <div className="pl-4 border-l-2 border-emerald-500/30 mb-4">
+                    <div className="relative pl-6 mb-4">
+                        <div className="absolute top-1 bottom-1 left-0 w-1 bg-emerald-500/30 rounded-full" />
                         <p className="text-xs font-bold text-zinc-400 uppercase tracking-[0.3em]">
                             {hasAiKey ? "Transaction Ledger" : "Standard Ledger"}
                         </p>
@@ -229,10 +226,14 @@ export function DashboardLayout({
                                 className="grid grid-cols-1 md:grid-cols-3 gap-8"
                             >
                                 {/* Financial Trajectory (2/3 width) */}
-                                <div className="md:col-span-2 flex flex-col h-full bg-white dark:bg-zinc-950 rounded-[24px] border border-zinc-100 dark:border-zinc-900 shadow-sm p-6 relative overflow-hidden group">
+                                <motion.div
+                                    whileHover={{ y: -4, scale: 1.002 }}
+                                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                                    className="md:col-span-2 flex flex-col h-full bg-white dark:bg-zinc-950 rounded-[24px] border border-zinc-100 dark:border-zinc-900 shadow-sm p-6 relative overflow-hidden group"
+                                >
                                     <div className="flex items-center justify-between mb-6 z-10 relative">
-                                        <div className="flex items-center gap-4">
-                                            <div className="h-4 w-1 bg-emerald-500 rounded-full" />
+                                        <div className="flex items-center gap-4 pl-3">
+                                            <div className="absolute top-6 bottom-6 left-0 w-1 bg-emerald-500/30 rounded-full" />
                                             <div>
                                                 <h3 className="text-lg font-serif tracking-tight text-zinc-900 dark:text-zinc-50">Financial Trajectory</h3>
                                                 <p className="text-[10px] text-zinc-400 font-medium">Burn Rate & Projection</p>
@@ -255,16 +256,19 @@ export function DashboardLayout({
                                     <div className="flex-1 min-h-[300px] w-full relative z-10">
                                         <BurnRateChart transactions={allTransactions} budget={budget} days={chartDays} />
                                     </div>
-                                    {/* Subtle background decoration */}
                                     <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-                                </div>
+                                </motion.div>
 
                                 {/* Category Distribution (1/3 width) */}
-                                <div className="md:col-span-1 h-full">
+                                <motion.div
+                                    whileHover={{ y: -4, scale: 1.005 }}
+                                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                                    className="md:col-span-1 h-full"
+                                >
                                     <div className="h-full bg-white dark:bg-zinc-950 rounded-[24px] border border-zinc-100 dark:border-zinc-900 shadow-sm relative overflow-hidden group hover:border-zinc-200 dark:hover:border-zinc-800 transition-colors flex flex-col p-6">
                                         <div className="flex items-center justify-between mb-6 z-10 relative">
-                                            <div className="flex items-center gap-4">
-                                                <div className="h-4 w-1 bg-indigo-500 rounded-full" />
+                                            <div className="flex items-center gap-4 pl-3">
+                                                <div className="absolute top-6 bottom-6 left-0 w-1 bg-indigo-500/30 rounded-full" />
                                                 <div>
                                                     <h3 className="text-lg font-serif tracking-tight text-zinc-900 dark:text-zinc-50">Spending Mix</h3>
                                                     <p className="text-[10px] text-zinc-400 font-medium">Expense Breakdown</p>
@@ -276,7 +280,7 @@ export function DashboardLayout({
                                             <CategoryDistChart data={categoryData || []} />
                                         </div>
                                     </div>
-                                </div>
+                                </motion.div>
                             </motion.div>
 
                             <motion.div
@@ -285,9 +289,24 @@ export function DashboardLayout({
                                 viewport={{ once: true }}
                                 className="space-y-12"
                             >
-                                <RoastAndBoast transactions={allTransactions} budget={budget} />
-                                <MLInsights data={insights || null} />
-                                <BudgetAlert totalSpent={totalSpent} budget={budget} />
+                                <motion.div
+                                    whileHover={{ y: -3, scale: 1.005 }}
+                                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                                >
+                                    <RoastAndBoast transactions={allTransactions} budget={budget} />
+                                </motion.div>
+                                <motion.div
+                                    whileHover={{ y: -3, scale: 1.005 }}
+                                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                                >
+                                    <MLInsights data={insights || null} />
+                                </motion.div>
+                                <motion.div
+                                    whileHover={{ y: -3, scale: 1.005 }}
+                                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                                >
+                                    <BudgetAlert totalSpent={totalSpent} budget={budget} />
+                                </motion.div>
                             </motion.div>
                         </div>
 
@@ -296,9 +315,9 @@ export function DashboardLayout({
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.6 }}
-                            className="space-y-8"
+                            className="space-y-8 flex flex-col min-h-full"
                         >
-                            <div>
+                            <div className="flex-grow">
                                 <div className="flex items-center gap-4 mb-8">
                                     <h3 className="text-xl font-serif">Recent Journal</h3>
                                     <div className="h-px bg-zinc-100 dark:bg-zinc-900 flex-grow" />
@@ -319,6 +338,19 @@ export function DashboardLayout({
                                     </Link>
                                 </motion.div>
                             </div>
+
+                            {/* Artist Credit */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 1 }}
+                                className="pt-12 flex items-center gap-2"
+                            >
+                                <div className="w-1 h-1 rounded-full bg-emerald-500/50" />
+                                <p className="text-[10px] font-bold tracking-[0.2em] text-zinc-300 dark:text-zinc-700 uppercase">
+                                    Developed by <span className="text-zinc-400 dark:text-zinc-600">OMRed</span>
+                                </p>
+                            </motion.div>
                         </motion.div>
                     </div>
                 </div>

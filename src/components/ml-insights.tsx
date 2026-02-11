@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { getInsights } from "@/app/actions/get-insights";
 import { DeterministicInsights } from "@/lib/deterministic-logic";
 import { motion, AnimatePresence } from "framer-motion";
+import { NumberFlow } from "@/components/ui/number-flow";
 
 export function MLInsights({ data }: { data: DeterministicInsights | null }) {
     const [isMounted, setIsMounted] = useState(false);
@@ -48,11 +49,14 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
                     <div className="text-right">
                         <div className="inline-flex flex-col items-end opacity-60 hover:opacity-100 transition-opacity">
                             <div className="flex items-center gap-1 mb-1">
-                                <span className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase">SpendWise Score</span>
+                                <span className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase">Flowly Score</span>
                                 <Info className="w-2.5 h-2.5 text-zinc-300" />
                             </div>
                             <div className="flex items-baseline gap-1">
-                                <span className="text-2xl font-serif text-indigo-500/80">{data.spendwise_score}</span>
+                                <NumberFlow
+                                    value={data.flowly_score}
+                                    className="text-2xl font-serif text-indigo-500/80"
+                                />
                                 <span className="text-[10px] text-zinc-400 font-medium">/100</span>
                             </div>
                             <p className="text-[9px] text-zinc-400 font-medium mt-1 max-w-[150px] leading-tight text-right italic">
@@ -64,7 +68,7 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
 
                 <div className="grid grid-cols-1 gap-6">
                     {/* Forecast Section */}
-                    <div className="group relative p-8 bg-white dark:bg-zinc-900/40 rounded-2xl border border-indigo-50 dark:border-indigo-900/20 shadow-sm transition-all hover:border-indigo-500/30">
+                    <div className="group relative p-8 bg-white dark:bg-zinc-900/40 rounded-2xl border border-indigo-50 dark:border-indigo-900/20 shadow-sm transition-all hover:border-indigo-500/30 ml-4">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-3">
@@ -79,9 +83,12 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
                             </div>
                             <div className="text-right">
                                 {data.forecast_next_month !== null ? (
-                                    <span className="text-4xl font-serif tracking-tighter text-indigo-600/80 dark:text-indigo-400/80 leading-none">
-                                        ${data.forecast_next_month.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                    </span>
+                                    <NumberFlow
+                                        value={data.forecast_next_month}
+                                        prefix="$"
+                                        decimals={2}
+                                        className="text-4xl font-serif tracking-tighter text-indigo-600/80 dark:text-indigo-400/80 leading-none"
+                                    />
                                 ) : (
                                     <span className="text-xl font-serif tracking-tight text-zinc-400 leading-none">
                                         Insufficient Data
@@ -89,12 +96,13 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
                                 )}
                             </div>
                         </div>
-                        <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500/30 rounded-l-2xl" />
+                        <div className="absolute top-8 bottom-8 left-3 w-1 bg-indigo-500/30 rounded-full" />
                     </div>
 
                     {/* Insights Section (Causality & Recovery) */}
                     {data.insights && data.insights.length > 0 && (
-                        <div className="space-y-4">
+                        <div className="space-y-4 relative pl-3">
+                            <div className="absolute top-0 bottom-0 left-0 w-1 bg-emerald-500/30 rounded-full" />
                             <div className="flex items-center gap-3 pl-1">
                                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                                 <p className="text-[10px] font-bold tracking-[0.2em] text-emerald-500 uppercase">Actionable Insights</p>
@@ -168,7 +176,7 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
                         Last Updated: {isMounted ? new Date(data.generated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "--:--"}
                     </p>
                     <p className="text-[9px] font-bold text-zinc-300 dark:text-zinc-700 uppercase tracking-widest">
-                        System: SpendWise Deterministic v1.0
+                        System: Flowly Deterministic v1.0
                     </p>
                 </div>
 
@@ -177,7 +185,7 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
                         <div className="flex items-center gap-2">
                             <div className={`w-2 h-2 rounded-full ${data.is_low_data ? 'bg-amber-400' : 'bg-emerald-500 animate-pulse'}`}></div>
                             <span className="font-semibold text-zinc-700 dark:text-zinc-300">
-                                {data.is_low_data ? 'Learning Mode: Add 5+ transactions' : 'Analysis Reliable'}
+                                {data.is_low_data ? `Learning Mode: Need ${5 - (data.data_points || 0)} more expenses` : 'Analysis Reliable'}
                             </span>
                         </div>
                         <span className="uppercase tracking-widest text-[10px] font-medium text-zinc-400">System Status</span>

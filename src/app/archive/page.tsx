@@ -5,6 +5,7 @@ import { transactions } from "@/db/schema";
 import { desc, eq, and, isNull } from "drizzle-orm";
 import { ArchiveView } from "@/components/archive-view";
 import { PageTransitionWrapper } from "@/components/page-transition-wrapper";
+import { Transaction } from "@/lib/types";
 
 export default async function ArchivePage() {
     const session = await auth();
@@ -21,7 +22,7 @@ export default async function ArchivePage() {
             )
         )
         .orderBy(desc(transactions.date))
-        .all();
+        .all() as Transaction[];
 
     return (
         <PageTransitionWrapper>

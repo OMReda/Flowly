@@ -1,8 +1,9 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="8" fill="url(#grad1)" />
-  <path d="M8 22L14 16L18 19L24 10" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="28" fill="url(#flowly-grad-emerald)" />
+  <path d="M30 40C30 40 50 35 60 45C70 55 70 70 85 75" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M20 55C20 55 40 50 50 60C60 70 60 85 75 90" stroke="white" stroke-width="4" stroke-linecap="round" />
   <defs>
-    <linearGradient id="grad1" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+    <linearGradient id="flowly-grad-emerald" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
       <stop stop-color="#10B981" />
       <stop offset="1" stop-color="#059669" />
     </linearGradient>

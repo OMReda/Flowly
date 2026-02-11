@@ -2,7 +2,7 @@ import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
 import * as schema from './schema';
 
-const dbFile = process.env.DB_FILE_NAME?.replace("file:", "") || 'spendwise_prod.db';
+const dbFile = process.env.DB_FILE_NAME?.replace("file:", "") || 'flowly_prod.db';
 
 const globalForDb = global as unknown as {
     sqlite: Database.Database | undefined;

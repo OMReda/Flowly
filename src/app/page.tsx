@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 import {
-  calculateSpendWiseScore,
+  calculateFlowlyScore,
   detectAnomalies,
   generateForecast,
   generateInsights
@@ -161,17 +161,17 @@ export default async function Home() {
       return { ...item, color: colors[index % colors.length] };
     });
 
-  const insightsList = generateInsights(expenses, budget, currentMonthSpent);
-  const { score, reasoning: scoreReasoning } = calculateSpendWiseScore(currentMonthSpent, budget, anomalies, expenses.length);
+  const insightsList = generateInsights(expenses, budget, currentMonthSpent, expenses.length);
+  const { score, reasoning: scoreReasoning } = calculateFlowlyScore(currentMonthSpent, budget, anomalies, expenses.length);
 
   const insightsData = {
     generated_at: new Date().toISOString(),
-    status: expenses.length >= 10 ? 'intelligent' : (expenses.length >= 5 ? 'baseline' : 'learning'),
+    status: (expenses.length >= 10 ? 'intelligent' : (expenses.length >= 5 ? 'baseline' : 'learning')) as 'intelligent' | 'baseline' | 'learning',
     forecast_next_month: forecast.total,
     forecast_reasoning: forecast.reasoning,
     confidence: forecast.confidence,
     anomalies,
-    spendwise_score: score,
+    flowly_score: score,
     score_reasoning: scoreReasoning,
     data_points: expenses.length,
     insights: insightsList,

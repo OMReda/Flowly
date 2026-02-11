@@ -22,7 +22,6 @@ export async function processFinance(formData: FormData) {
         if (!rawInput && !file) {
             return { error: "No input provided" };
         }
-        console.log("[ACTION] processFinance start", { rawInput, hasFile: !!file });
 
         let data: {
             merchant: string;
@@ -58,7 +57,6 @@ export async function processFinance(formData: FormData) {
                 const jsonMatch = text.match(/\{[\s\S]*\}/);
                 if (jsonMatch) {
                     data = JSON.parse(jsonMatch[0]);
-                    console.log("[ACTION] processFinance AI Extraction Successful");
                 }
             } catch (aiError) {
                 console.error("[ACTION] processFinance AI failed, falling back to mock:", aiError);
@@ -67,7 +65,6 @@ export async function processFinance(formData: FormData) {
 
         // Fallback to Mock if AI failed or key invalid
         if (!data) {
-            console.log("[ACTION] processFinance using Mock Parser Fallback");
             // Add a small artificial delay to simulate "AI thinking" for a better demo feel
             await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -118,7 +115,6 @@ export async function processFinance(formData: FormData) {
             new_data: JSON.stringify(transactionValue),
         }).run();
 
-        console.log("[ACTION] processFinance success");
         revalidatePath("/");
         return { success: true };
 

@@ -36,7 +36,7 @@ export function AuthHero() {
     }, []);
 
     return (
-        <div className="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden bg-zinc-900 min-h-screen">
+        <div className="relative w-full h-full bg-zinc-950 flex flex-col justify-end p-12 overflow-hidden group/hero" data-developer="OMRed">
             <AnimatePresence mode="wait">
                 <motion.div
                     key={currentShot}
@@ -83,14 +83,22 @@ export function AuthHero() {
                 </AnimatePresence>
             </div>
 
-            <div className="relative z-10 flex gap-3">
-                {HERO_SHOTS.map((_, i) => (
-                    <div
-                        key={i}
-                        className={`h-0.5 transition-all duration-700 ${i === currentShot ? "w-12 bg-emerald-400" : "w-6 bg-white/30"
-                            }`}
-                    />
-                ))}
+            <div className="relative z-10 flex flex-col gap-6">
+                <div className="flex gap-3">
+                    {HERO_SHOTS.map((_, i) => (
+                        <div
+                            key={i}
+                            className={`h-0.5 transition-all duration-700 ${i === currentShot ? "w-12 bg-emerald-400" : "w-6 bg-white/30"
+                                }`}
+                        />
+                    ))}
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 rounded-full bg-emerald-500/50" />
+                    <p className="text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase">
+                        Developed by <span className="text-white/60">OMRed</span>
+                    </p>
+                </div>
             </div>
         </div>
     );

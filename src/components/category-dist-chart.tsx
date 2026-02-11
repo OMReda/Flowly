@@ -16,7 +16,11 @@ export function CategoryDistChart({ data }: { data: CategoryData[] }) {
 
     if (chartData.length === 0) {
         return (
-            <div className="h-full w-full flex flex-col items-center justify-center min-h-[220px] relative bg-zinc-50/20 dark:bg-zinc-900/10 rounded-[32px] border border-zinc-100/50 dark:border-zinc-800/30 overflow-hidden group">
+            <motion.div
+                whileHover={{ y: -8, scale: 1.01 }}
+                transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                className="h-full w-full flex flex-col items-center justify-center min-h-[220px] relative bg-zinc-50/20 dark:bg-zinc-900/10 rounded-[32px] border border-zinc-100/50 dark:border-zinc-800/30 overflow-hidden group"
+            >
                 {/* Background Sweep Effect */}
                 <div className="absolute inset-0 pointer-events-none">
                     <motion.div
@@ -35,8 +39,12 @@ export function CategoryDistChart({ data }: { data: CategoryData[] }) {
                             rotate: [0, 360],
                             opacity: [0.3, 0.5, 0.3]
                         }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute inset-0 rounded-full border-[10px] border-zinc-200/40 dark:border-zinc-800/40 border-t-zinc-400 dark:border-t-zinc-600"
+                        transition={{
+                            duration: 20,
+                            repeat: Infinity,
+                            ease: "linear"
+                        }}
+                        className="absolute inset-0 rounded-full border-[10px] border-zinc-200/40 dark:border-zinc-800/40 border-t-zinc-400 dark:border-t-zinc-600 transition-colors duration-700 group-hover:border-t-emerald-500/50"
                     />
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                         <motion.div
@@ -72,7 +80,7 @@ export function CategoryDistChart({ data }: { data: CategoryData[] }) {
                         <p className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.4em]">Structure awaits input</p>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         );
     }
 
@@ -80,10 +88,34 @@ export function CategoryDistChart({ data }: { data: CategoryData[] }) {
     const isSingleCategory = chartData.length === 1;
 
     return (
-        <div className="h-full w-full flex flex-col">
-            {/* Header removed, handled by parent layout */}
+        <motion.div
+            initial={{ opacity: 0, rotate: -2, scale: 0.95 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
+            className="h-full w-full flex flex-col relative overflow-hidden"
+        >
+            {/* Living Background (Structure) */}
+            <div className="absolute inset-0 pointer-events-none opacity-[0.2] dark:opacity-[0.3]">
+                <motion.div
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] bg-gradient-to-tr from-zinc-200/20 via-transparent to-transparent dark:from-zinc-800/20 rounded-full blur-2xl"
+                />
+            </div>
 
             <div className="flex-1 min-h-[180px] relative">
+                {/* Background "Ghost Ring" */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 pointer-events-none">
+                    <motion.div
+                        animate={{
+                            rotate: [0, 360],
+                            opacity: [0.1, 0.2, 0.1]
+                        }}
+                        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-0 rounded-full border-[6px] border-zinc-100/50 dark:border-zinc-800/50 border-t-zinc-200 dark:border-t-zinc-700"
+                    />
+                </div>
+
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                         <Pie
@@ -95,6 +127,9 @@ export function CategoryDistChart({ data }: { data: CategoryData[] }) {
                             stroke="none"
                             startAngle={90}
                             endAngle={-270}
+                            animationBegin={200}
+                            animationDuration={1800}
+                            animationEasing="ease-out"
                         >
                             {chartData.map((entry, index) => (
                                 <Cell
@@ -122,15 +157,24 @@ export function CategoryDistChart({ data }: { data: CategoryData[] }) {
 
                 {/* Center Stats (Hide for single category to avoid clutter over the pie) */}
                 {!isSingleCategory && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.8, duration: 0.5 }}
+                        className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+                    >
                         <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-widest mb-0.5">Top</span>
-                        <span className="text-xs font-bold text-zinc-900 dark:text-zinc-50 max-w-[80px] truncate text-center">
+                        <motion.span
+                            animate={{ opacity: [0.8, 1, 0.8] }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                            className="text-xs font-bold text-zinc-900 dark:text-zinc-50 max-w-[80px] truncate text-center"
+                        >
                             {chartData[0]?.name}
-                        </span>
+                        </motion.span>
                         <span className="text-[9px] font-medium text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded-full mt-1">
                             {((chartData[0]?.value / chartData.reduce((a, b) => a + b.value, 0)) * 100).toFixed(0)}%
                         </span>
-                    </div>
+                    </motion.div>
                 )}
             </div>
 
@@ -157,6 +201,6 @@ export function CategoryDistChart({ data }: { data: CategoryData[] }) {
                     </div>
                 )}
             </div>
-        </div>
+        </motion.div>
     );
 }

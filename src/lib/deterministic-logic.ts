@@ -19,18 +19,18 @@ export interface Anomaly {
 export interface DeterministicInsights {
     generated_at: string;
     status: 'learning' | 'baseline' | 'intelligent';
-    forecast_next_month: number | null;  // ✅ Allow null for insufficient data
+    forecast_next_month: number | null;
     forecast_reasoning: string;
     confidence: 'low' | 'medium' | 'high';
     anomalies: Anomaly[];
-    spendwise_score: number;
+    flowly_score: number;
     score_reasoning: string;
     data_points: number;
     insights: Insight[];
     is_low_data: boolean;
 }
 
-export function calculateSpendWiseScore(
+export function calculateFlowlyScore(
     totalSpent: number,
     budget: number,
     anomalies: Anomaly[],
@@ -190,7 +190,7 @@ export function generateInsights(
             type: 'pacing',
             title: 'Learning Mode Active',
             description: 'Add more transactions to unlock personalized insights.',
-            impact: `SpendWise needs at least 5 transactions to provide reliable guidance. Currently tracking ${transactionCount} transaction${transactionCount === 1 ? '' : 's'}.`
+            impact: `Flowly needs at least 5 transactions to provide reliable guidance. Currently tracking ${transactionCount} transaction${transactionCount === 1 ? '' : 's'}.`
         }];
     }
 
@@ -247,7 +247,7 @@ export function generateInsights(
  * Explanation methods for transparency
  */
 export function getScoreExplanation(): string {
-    return `SpendWise Score Calculation:
+    return `Flowly Score Calculation:
 
 1. Budget Adherence (50 points)
    • Full points if spending ≤ budget

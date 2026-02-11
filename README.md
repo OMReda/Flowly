@@ -1,10 +1,10 @@
-# SpendWise AI
+# Flowly AI
 
-**Refined Financial Control.**
+**Fluid Financial Control.**
 
-SpendWise AI is a modern, privacy-focused financial dashboard that combines deterministic financial logic with AI-powered insights to help you track, analyze, and optimize your spending. It features robust transaction management, intelligent forecasting, and a premium "medical-grade" UI.
+Flowly AI is a modern, privacy-focused financial dashboard developed by **OMRed**. It combines deterministic financial logic with AI-powered insights to help you track, analyze, and optimize your spending. It features robust transaction management, intelligent forecasting, and a premium "medical-grade" UI.
 
-![SpendWise Dashboard](./public/dashboard-preview.png)
+![Flowly Dashboard](./public/dashboard-preview.png)
 
 ## Key Features
 
@@ -38,8 +38,8 @@ SpendWise AI is a modern, privacy-focused financial dashboard that combines dete
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/yourusername/spendwise-ai.git
-    cd spendwise-ai
+    git clone https://github.com/yourusername/flowly-ai.git
+    cd flowly-ai
     ```
 
 2.  **Install dependencies:**

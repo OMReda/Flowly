@@ -4,7 +4,7 @@ import { eq, desc, and, isNull } from "drizzle-orm";
 import { auth } from "@/auth";
 import { Transaction, UserProfile } from "@/lib/types";
 import {
-    calculateSpendWiseScore,
+    calculateFlowlyScore,
     detectAnomalies,
     generateForecast,
     generateInsights,
@@ -13,7 +13,6 @@ import {
 
 export async function getInsights(): Promise<DeterministicInsights | { error: string }> {
     try {
-        console.log("[ACTION] getInsights start");
         const session = await auth();
         if (!session?.user?.id) {
             console.warn("[ACTION] getInsights failed: Not authenticated");
@@ -21,7 +20,6 @@ export async function getInsights(): Promise<DeterministicInsights | { error: st
         }
 
         const userId = session.user.id;
-        console.log(`[ACTION] getInsights fetching data for user: ${userId}`);
 
         const allTransactions = db.select().from(transactions)
             .where(
@@ -47,9 +45,7 @@ export async function getInsights(): Promise<DeterministicInsights | { error: st
         const forecast = generateForecast(expenses);
         // Correctly pass transaction count
         const insightsList = generateInsights(expenses, budget, totalSpent, expenses.length);
-        const { score, reasoning: scoreReasoning } = calculateSpendWiseScore(totalSpent, budget, anomalies, expenses.length);
-
-        console.log(`[ACTION] getInsights processing complete. Score: ${score}`);
+        const { score, reasoning: scoreReasoning } = calculateFlowlyScore(totalSpent, budget, anomalies, expenses.length);
 
         return {
             generated_at: new Date().toISOString(),
@@ -58,7 +54,7 @@ export async function getInsights(): Promise<DeterministicInsights | { error: st
             forecast_reasoning: forecast.reasoning || "Insufficient data",
             confidence: (forecast.confidence as 'low' | 'medium' | 'high') || "low",
             anomalies: anomalies || [],
-            spendwise_score: Number(score) || 0,
+            flowly_score: Number(score) || 0,
             score_reasoning: scoreReasoning,
             data_points: expenses.length,
             insights: insightsList || [],

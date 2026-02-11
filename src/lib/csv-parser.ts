@@ -26,6 +26,111 @@ export interface CSVParseResult {
  * date,merchant,amount,type,category,description
  * 2024-01-15,Starbucks,12.50,expense,Food,Morning coffee
  */
+/**
+ * Universal Data Parser
+ * Supports: CSV, JSON
+ */
+
+export function parseData(text: string, filename?: string): CSVParseResult {
+    const isJson = filename?.toLowerCase().endsWith('.json') || (text.trim().startsWith('[') || text.trim().startsWith('{'));
+
+    if (isJson) {
+        return parseJSON(text);
+    }
+    return parseCSV(text);
+}
+
+export function parseJSON(jsonText: string): CSVParseResult {
+    const valid: CSVRow[] = [];
+    const errors: CSVValidationError[] = [];
+    let totalRows = 0;
+
+    try {
+        const data = JSON.parse(jsonText);
+        const rows = Array.isArray(data) ? data : [data];
+        totalRows = rows.length;
+
+        rows.forEach((item, index) => {
+            const rowNumber = index + 1;
+            const row: Partial<CSVRow> = {};
+            let hasError = false;
+
+            // Date validation
+            if (!item.date) {
+                errors.push({ row: rowNumber, field: 'date', message: 'Date is required (YYYY-MM-DD).' });
+                hasError = true;
+            } else if (!isValidDate(item.date)) {
+                errors.push({ row: rowNumber, field: 'date', message: 'Invalid date format. Use YYYY-MM-DD.' });
+                hasError = true;
+            } else {
+                row.date = item.date;
+            }
+
+            // Merchant validation
+            if (!item.merchant) {
+                errors.push({ row: rowNumber, field: 'merchant', message: 'Merchant name is required.' });
+                hasError = true;
+            } else {
+                row.merchant = item.merchant;
+            }
+
+            // Amount validation
+            if (item.amount === undefined || item.amount === null) {
+                errors.push({ row: rowNumber, field: 'amount', message: 'Amount is required.' });
+                hasError = true;
+            } else {
+                const amount = typeof item.amount === 'number' ? item.amount : parseFloat(item.amount);
+                if (isNaN(amount)) {
+                    errors.push({ row: rowNumber, field: 'amount', message: 'Amount must be a valid number.' });
+                    hasError = true;
+                } else if (amount <= 0) {
+                    errors.push({ row: rowNumber, field: 'amount', message: 'Amount must be a positive number.' });
+                    hasError = true;
+                } else {
+                    row.amount = amount.toString();
+                }
+            }
+
+            // Type validation
+            if (!item.type) {
+                errors.push({ row: rowNumber, field: 'type', message: 'Transaction type is required.' });
+                hasError = true;
+            } else if (item.type !== 'income' && item.type !== 'expense') {
+                errors.push({ row: rowNumber, field: 'type', message: 'Type must be "income" or "expense".' });
+                hasError = true;
+            } else {
+                row.type = item.type;
+            }
+
+            // Category validation
+            if (!item.category) {
+                errors.push({ row: rowNumber, field: 'category', message: 'Category is required.' });
+                hasError = true;
+            } else {
+                row.category = item.category;
+            }
+
+            // Optional description
+            if (item.description) {
+                row.description = item.description;
+            }
+
+            if (!hasError) {
+                valid.push(row as CSVRow);
+            }
+        });
+
+    } catch (e) {
+        errors.push({
+            row: 0,
+            field: 'json',
+            message: 'Invalid JSON format. Please ensure your file is a valid JSON array or object.'
+        });
+    }
+
+    return { valid, errors, totalRows };
+}
+
 export function parseCSV(csvText: string): CSVParseResult {
     const lines = csvText.trim().split('\n');
     const valid: CSVRow[] = [];
@@ -50,7 +155,7 @@ export function parseCSV(csvText: string): CSVParseResult {
         errors.push({
             row: 0,
             field: 'header',
-            message: `Missing required columns: ${missingHeaders.join(', ')}`
+            message: `The CSV is missing required columns: ${missingHeaders.join(', ')}. Please ensure your file includes exactly: ${expectedHeaders.join(', ')} (and optional 'description').`
         });
         return { valid, errors, totalRows: 0 };
     }
@@ -97,7 +202,7 @@ export function parseCSV(csvText: string): CSVParseResult {
             errors.push({
                 row: rowNumber,
                 field: 'date',
-                message: 'Invalid date format. Use YYYY-MM-DD (e.g., 2024-01-15)'
+                message: 'Invalid date format. Please use YYYY-MM-DD (for example: 2024-01-15).'
             });
             hasError = true;
         } else {
@@ -130,14 +235,14 @@ export function parseCSV(csvText: string): CSVParseResult {
             errors.push({
                 row: rowNumber,
                 field: 'amount',
-                message: 'Amount must be a valid number (e.g., 12.50)'
+                message: 'Amount must be a valid number (for example: 12.50). Please remove currency symbols or commas.'
             });
             hasError = true;
         } else if (parseFloat(amountValue) <= 0) {
             errors.push({
                 row: rowNumber,
                 field: 'amount',
-                message: 'Amount must be greater than 0'
+                message: 'Amount must be a positive number. Please check if this is a negative value.'
             });
             hasError = true;
         } else {
@@ -157,7 +262,7 @@ export function parseCSV(csvText: string): CSVParseResult {
             errors.push({
                 row: rowNumber,
                 field: 'type',
-                message: 'Type must be either "income" or "expense"'
+                message: 'Transaction type must be either "income" or "expense" (lowercase).'
             });
             hasError = true;
         } else {
@@ -210,4 +315,25 @@ export function generateExampleCSV(): string {
 2024-01-16,Amazon,45.99,expense,Shopping,Books
 2024-01-17,Paycheck,2500.00,income,Salary,Monthly salary
 2024-01-18,Uber,18.75,expense,Transport,Ride to airport`;
+}
+
+export function generateExampleJSON(): string {
+    return JSON.stringify([
+        {
+            "date": "2024-01-15",
+            "merchant": "Starbucks",
+            "amount": 12.50,
+            "type": "expense",
+            "category": "Food",
+            "description": "Morning coffee"
+        },
+        {
+            "date": "2024-01-16",
+            "merchant": "Amazon",
+            "amount": 45.99,
+            "type": "expense",
+            "category": "Shopping",
+            "description": "Books"
+        }
+    ], null, 4);
 }

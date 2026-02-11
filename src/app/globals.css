@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
-/* Force rebuild v3: metadata change */
+/* Force rebuild v4: metadata change to fix chunk error */
 :root {
-  --rebuild-trigger: 3;
+  --rebuild-trigger: 4;
 }
 
 

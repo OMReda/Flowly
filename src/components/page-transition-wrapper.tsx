@@ -6,19 +6,9 @@ import { useState, useEffect } from "react";
 
 export function PageTransitionWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
-    // During hydration, render a stable div to match server output
-    if (!isMounted) {
-        return <div className="w-full">{children}</div>;
-    }
 
     return (
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
             <motion.div
                 key={pathname}
                 initial={{ opacity: 0, x: pathname === "/login" || pathname === "/register" ? 20 : 0, scale: 0.99 }}

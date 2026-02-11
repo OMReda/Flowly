@@ -18,7 +18,6 @@ const manualTransactionSchema = z.object({
 
 export async function addManualTransaction(formData: FormData) {
     try {
-        console.log("[ACTION] addManualTransaction start");
         const session = await auth();
         if (!session?.user?.id) {
             console.warn("[ACTION] addManualTransaction failed: Not authenticated");
@@ -69,7 +68,6 @@ export async function addManualTransaction(formData: FormData) {
             new_data: JSON.stringify(transactionValue),
         }).run();
 
-        console.log("[ACTION] addManualTransaction success");
         revalidatePath("/");
         return { success: true, id: newId, type: validated.data.type };
     } catch (error) {

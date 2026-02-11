@@ -30,7 +30,7 @@ export function BudgetAlert({ totalSpent, budget }: BudgetAlertProps) {
         };
 
         const sendNotification = () => {
-            const notification = new Notification("SpendWise Alert 🚨", {
+            const notification = new Notification("Flowly Alert 🚨", {
                 body: `You've exceeded your budget of $${budget}. Total: $${totalSpent.toFixed(2)}`,
                 icon: "/favicon.ico", // Ensure this exists or use a placeholder
             });

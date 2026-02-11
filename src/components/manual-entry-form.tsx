@@ -58,9 +58,7 @@ export function ManualEntryForm({ onComplete }: { onComplete?: () => void }) {
         try {
             formData.set("type", type);
             formData.set("category", category); // Use local state for category
-            console.log("[CLIENT] Calling addManualTransaction...");
             const result = await addManualTransaction(formData);
-            console.log("[CLIENT] addManualTransaction result:", JSON.stringify(result));
 
             if (result.success) {
                 toast.success("Transaction added", {
@@ -69,8 +67,7 @@ export function ManualEntryForm({ onComplete }: { onComplete?: () => void }) {
                         onClick: async () => {
                             try {
                                 const { deleteTransaction } = await import("@/app/actions/delete-transaction");
-                                const delResult = await deleteTransaction(result.id);
-                                console.log("[CLIENT] deleteTransaction (Undo) result:", JSON.stringify(delResult));
+                                await deleteTransaction(result.id);
                                 toast.info("Transaction reverted");
                             } catch (undoErr) {
                                 console.error("[CLIENT] Undo Error:", undoErr);

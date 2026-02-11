@@ -1,7 +1,10 @@
 {
-  "name": "spendwise-ai",
+  "name": "flowly-ai",
   "version": "0.1.0",
   "private": true,
+  "description": "Flowly AI - Fluid Financial Control by OMRed",
+  "author": "OMRed",
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "next dev",
     "dev:network": "next dev --hostname 0.0.0.0",

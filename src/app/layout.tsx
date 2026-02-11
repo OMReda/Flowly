@@ -18,8 +18,11 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "SpendWise AI | Smart Finance Tracker",
-  description: "Take control of your finances with AI-powered insights and forecasting.",
+  title: "Flowly AI | Fluid Finance Tracker",
+  description: "Experience fluid financial control with AI-powered insights and forecasting.",
+  authors: [{ name: "OMRed" }],
+  creator: "OMRed",
+  publisher: "OMRed",
   icons: {
     icon: "/favicon.svg",
   },

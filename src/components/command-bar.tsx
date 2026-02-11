@@ -12,19 +12,24 @@ function SubmitButton({ disabled }: { disabled?: boolean }) {
     const { pending } = useFormStatus();
 
     return (
-        <Button
-            type="submit"
-            size="icon"
-            className="rounded-full bg-emerald-600 hover:bg-emerald-700 shrink-0 disabled:opacity-50 disabled:bg-zinc-300 dark:disabled:bg-zinc-700"
-            disabled={pending || disabled}
+        <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
         >
-            {pending ? (
-                <Sparkles className="w-4 h-4 animate-spin text-white" />
-            ) : (
-                <Sparkles className="w-4 h-4 text-white" />
-            )}
-            <span className="sr-only">Analyze</span>
-        </Button>
+            <Button
+                type="submit"
+                size="icon"
+                className="rounded-full bg-emerald-600 hover:bg-emerald-700 shrink-0 disabled:opacity-50 disabled:bg-zinc-300 dark:disabled:bg-zinc-700"
+                disabled={pending || disabled}
+            >
+                {pending ? (
+                    <Sparkles className="w-4 h-4 animate-spin text-white" />
+                ) : (
+                    <Sparkles className="w-4 h-4 text-white" />
+                )}
+                <span className="sr-only">Analyze</span>
+            </Button>
+        </motion.div>
     );
 }
 
@@ -146,19 +151,23 @@ export function CommandBar({ hasAiKey = false, onImportCSV }: { hasAiKey?: boole
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
                 {/* Primary Actions */}
                 <div className="flex items-center gap-4">
-                    <button
+                    <motion.button
+                        whileHover={{ y: -2, scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => setShowManual(!showManual)}
                         className={`text-xs transition-colors font-medium flex items-center gap-1 ${!hasAiKey ? 'text-emerald-600 hover:text-emerald-700 underline underline-offset-8 decoration-emerald-500/30' : 'text-zinc-500 hover:text-emerald-600'}`}
                     >
                         {showManual ? "Close entry ledger" : "Add transaction manually"}
-                    </button>
+                    </motion.button>
                     {onImportCSV && (
-                        <button
+                        <motion.button
+                            whileHover={{ y: -2, scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={onImportCSV}
                             className="text-xs transition-colors font-medium flex items-center gap-1 text-zinc-500 hover:text-emerald-600"
                         >
                             Import CSV
-                        </button>
+                        </motion.button>
                     )}
                 </div>
 

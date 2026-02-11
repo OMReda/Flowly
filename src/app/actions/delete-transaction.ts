@@ -11,7 +11,6 @@ import { Transaction } from "@/lib/types";
 
 export async function deleteTransaction(transactionId: string) {
     try {
-        console.log(`[ACTION] deleteTransaction start: ${transactionId}`);
         const session = await auth();
         if (!session?.user?.id) {
             console.warn("[ACTION] deleteTransaction failed: Not authenticated");
@@ -48,7 +47,6 @@ export async function deleteTransaction(transactionId: string) {
             previous_data: JSON.stringify(existing),
         }).run();
 
-        console.log(`[ACTION] deleteTransaction success: ${transactionId}`);
         revalidatePath("/");
         return { success: true };
     } catch (error) {
@@ -59,7 +57,6 @@ export async function deleteTransaction(transactionId: string) {
 
 export async function restoreTransaction(transactionId: string) {
     try {
-        console.log(`[ACTION] restoreTransaction start: ${transactionId}`);
         const session = await auth();
         if (!session?.user?.id) return { error: "Not authenticated" };
         db.update(transactions)
@@ -80,7 +77,6 @@ export async function restoreTransaction(transactionId: string) {
             action: 'restore',
         }).run();
 
-        console.log(`[ACTION] restoreTransaction success: ${transactionId}`);
         revalidatePath("/");
         return { success: true };
     } catch (error) {

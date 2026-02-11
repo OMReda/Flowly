@@ -79,7 +79,17 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `spendwise_archive_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute("download", `flowly_archive_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const downloadJSON = () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(filteredTransactions, null, 2));
+        const link = document.createElement("a");
+        link.setAttribute("href", dataStr);
+        link.setAttribute("download", `flowly_archive_${new Date().toISOString().split('T')[0]}.json`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -117,6 +127,13 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
                             <Download className="w-3.5 h-3.5" />
                             <span>Export CSV</span>
                         </button>
+                        <button
+                            onClick={downloadJSON}
+                            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm"
+                        >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>Export JSON</span>
+                        </button>
                     </div>
                 </div>
 
@@ -127,8 +144,8 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
                     </div>
                     <div className="p-8 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-sm">
                         <p className="text-[10px] font-bold tracking-[0.3em] text-zinc-400 uppercase mb-2">Filtered View</p>
-                        <p className="text-lg font-serif">
-                            {filteredTransactions.length} <span className="text-sm text-zinc-400">records matching criteria</span>
+                        <p className="text-3xl font-serif">
+                            {filteredTransactions.length} <span className="text-sm text-zinc-400 font-sans tracking-normal">Entries</span>
                         </p>
                     </div>
                 </div>

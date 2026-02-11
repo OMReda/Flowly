@@ -50,7 +50,7 @@ export default function RegisterPage() {
                             Create Account
                         </motion.h2>
                         <p className="text-[10px] tracking-[0.2em] font-medium text-zinc-400 uppercase">
-                            Begin your journey with SpendWise
+                            Begin your journey with Flowly
                         </p>
                     </div>
 
@@ -78,7 +78,7 @@ export default function RegisterPage() {
                                     name="name"
                                     type="text"
                                     placeholder="Enter your name"
-                                    className="h-12 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 rounded-none px-0 focus-visible:ring-0 focus-visible:border-emerald-500 transition-all text-base placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
+                                    className="h-12 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 rounded-none px-0 focus-visible:ring-0 focus-visible:border-emerald-500 dark:focus-visible:border-emerald-400 transition-all text-base placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
                                     required
                                 />
                             </div>
@@ -91,7 +91,7 @@ export default function RegisterPage() {
                                     name="email"
                                     type="email"
                                     placeholder="Enter your email"
-                                    className="h-12 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 rounded-none px-0 focus-visible:ring-0 focus-visible:border-emerald-500 transition-all text-base placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
+                                    className="h-12 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 rounded-none px-0 focus-visible:ring-0 focus-visible:border-emerald-500 dark:focus-visible:border-emerald-400 transition-all text-base placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
                                     required
                                 />
                             </div>
@@ -105,7 +105,7 @@ export default function RegisterPage() {
                                     type="password"
                                     value={passwordValue}
                                     onChange={(e) => setPasswordValue(e.target.value)}
-                                    className="h-12 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 rounded-none px-0 focus-visible:ring-0 focus-visible:border-emerald-500 transition-all text-base"
+                                    className="h-12 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 rounded-none px-0 focus-visible:ring-0 focus-visible:border-emerald-500 dark:focus-visible:border-emerald-400 transition-all text-base"
                                     required
                                     minLength={8}
                                     pattern="(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}"
@@ -131,27 +131,31 @@ export default function RegisterPage() {
                             </div>
                         </div>
 
-                        <Button
-                            className="w-full h-14 bg-zinc-900 hover:bg-black text-white rounded-none flex items-center justify-center gap-2 text-xs font-bold tracking-widest uppercase transition-all overflow-hidden group relative"
-                            type="submit"
-                            disabled={isPending}
-                        >
-                            <span className="relative z-10 flex items-center gap-2">
-                                {isPending ? "Creating Account..." : "Sign Up"}
-                                {!isPending && <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />}
-                            </span>
-                            <motion.div
-                                className="absolute inset-0 bg-emerald-600"
-                                initial={{ x: '-100%' }}
-                                whileHover={{ x: '0%' }}
-                                transition={{ type: 'tween' }}
-                            />
-                        </Button>
+                        <motion.div initial="rest" whileHover="hover" animate="rest" className="w-full relative overflow-hidden group">
+                            <Button
+                                className="w-full h-14 bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 text-white rounded-none flex items-center justify-center gap-2 text-xs font-bold tracking-widest uppercase transition-all relative overflow-hidden active:scale-[0.98] hover:bg-zinc-900 dark:hover:bg-zinc-100"
+                                type="submit"
+                                disabled={isPending}
+                            >
+                                <span className="relative z-10 flex items-center gap-2">
+                                    {isPending ? "Creating Account..." : "Sign Up"}
+                                    {!isPending && <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />}
+                                </span>
+                                <motion.div
+                                    variants={{
+                                        rest: { x: '-101%' },
+                                        hover: { x: '0%' }
+                                    }}
+                                    transition={{ type: 'tween', duration: 0.4, ease: "easeInOut" }}
+                                    className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-600"
+                                />
+                            </Button>
+                        </motion.div>
                     </form>
 
                     <p className="text-[11px] text-center text-zinc-400 font-medium">
                         Already have an account?{" "}
-                        <Link href="/login" className="text-zinc-900 dark:text-zinc-100 font-bold hover:underline underline-offset-4 transition-all">
+                        <Link href="/login" className="text-zinc-900 dark:text-zinc-100 font-bold hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline underline-offset-4 transition-all">
                             Sign in
                         </Link>
                     </p>

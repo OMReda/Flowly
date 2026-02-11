@@ -36,9 +36,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
         } else {
             setLoading(true);
             try {
-                console.log("[CLIENT] Completing onboarding...");
                 const res = await updateProfile({ ...formData, onboarding_completed: true });
-                console.log("[CLIENT] updateProfile result:", JSON.stringify(res));
                 if (res.success) {
                     toast.success("Profile updated");
                     onClose();
@@ -68,7 +66,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
                 <div className="p-8 space-y-8">
                     <div className="flex justify-between items-start">
                         <div className="space-y-1">
-                            <h2 className="text-2xl font-serif tracking-tight text-zinc-900 dark:text-zinc-50">Welcome to SpendWise</h2>
+                            <h2 className="text-2xl font-serif tracking-tight text-zinc-900 dark:text-zinc-50">Welcome to Flowly</h2>
                             <p className="text-xs text-zinc-500 uppercase tracking-widest font-medium">Step {step} of {totalSteps}</p>
                         </div>
                         <button onClick={onClose} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
@@ -182,7 +180,6 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
                             onClick={async () => {
                                 onClose(); // Close immediately for UX
                                 try {
-                                    console.log("[CLIENT] Skipping onboarding setup...");
                                     const promise = updateProfile({ ...formData, onboarding_completed: true });
                                     toast.promise(promise, {
                                         loading: 'Saving preference...',
