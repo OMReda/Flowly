@@ -89,7 +89,7 @@ export function ManualEntryForm({ onComplete }: { onComplete?: () => void }) {
     }, null);
 
     const handleMerchantChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
+        const value = e.target.value.replace(/[0-9]/g, ''); // EXCLUSIVE: No numbers allowed
         setMerchant(value);
 
         const detected = detectMerchantCategory(value);
