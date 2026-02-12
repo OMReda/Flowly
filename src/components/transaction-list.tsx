@@ -240,21 +240,25 @@ export function TransactionList({ transactions, showDelete = false, showCategori
 
             <div className="mt-12 flex items-center justify-center h-10 border-t border-zinc-50 dark:border-zinc-900">
                 <div className="flex items-center gap-6">
-                    <button
+                    <motion.button
+                        whileHover={{ y: -1, scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => exportData('csv')}
-                        className="group flex items-center gap-2 h-6 px-2 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                        className="group flex items-center gap-2 h-6 px-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
                     >
-                        <Download className="w-3 h-3 text-zinc-400 group-hover:text-emerald-500 transition-colors" />
-                        <span className="text-[10px] font-medium text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 uppercase tracking-widest leading-none pt-[1px] transition-colors">CSV</span>
-                    </button>
+                        <Download className="w-3 h-3 text-zinc-400 group-hover:text-blue-500 transition-colors" />
+                        <span className="text-[10px] font-medium text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 uppercase tracking-widest leading-none pt-[1px] transition-colors">CSV</span>
+                    </motion.button>
 
-                    <button
+                    <motion.button
+                        whileHover={{ y: -1, scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => exportData('json')}
-                        className="group flex items-center gap-2 h-6 px-2 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                        className="group flex items-center gap-2 h-6 px-2 rounded-md hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all"
                     >
-                        <Download className="w-3 h-3 text-zinc-400 group-hover:text-emerald-500 transition-colors" />
-                        <span className="text-[10px] font-medium text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 uppercase tracking-widest leading-none pt-[1px] transition-colors">JSON</span>
-                    </button>
+                        <Download className="w-3 h-3 text-zinc-400 group-hover:text-amber-500 transition-colors" />
+                        <span className="text-[10px] font-medium text-zinc-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 uppercase tracking-widest leading-none pt-[1px] transition-colors">JSON</span>
+                    </motion.button>
 
                     <div className="h-3 w-px bg-zinc-100 dark:bg-zinc-800" />
 

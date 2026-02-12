@@ -173,7 +173,7 @@ export function CommandBar({ hasAiKey = false, onImportCSV }: { hasAiKey?: boole
                             whileHover={{ y: -2, scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={onImportCSV}
-                            className="text-xs transition-colors font-medium flex items-center gap-1 text-zinc-500 hover:text-emerald-600"
+                            className="text-xs transition-colors font-medium flex items-center gap-1 text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400"
                         >
                             Import CSV
                         </motion.button>
