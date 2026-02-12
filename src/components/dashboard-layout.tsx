@@ -243,12 +243,10 @@ export function DashboardLayout({
                                     onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}
                                 >
                                     <div className="flex items-center justify-between mb-6 z-10 relative">
-                                        <div className="flex items-center gap-4 pl-3">
-                                            <div className="absolute top-7 bottom-7 left-0 w-1 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-r-full shadow-[0_0_12px_rgba(16,185,129,0.5)]" />
-                                            <div>
-                                                <h3 className="text-lg font-serif tracking-tight font-semibold text-zinc-900 dark:text-zinc-50">Financial Trajectory</h3>
-                                                <p className="text-[10px] text-zinc-400 font-medium">Burn Rate & Projection</p>
-                                            </div>
+                                        <div className="relative pl-4">
+                                            <div className="absolute left-0 top-1 bottom-1 w-1 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.5)]" />
+                                            <h3 className="text-lg font-serif tracking-tight font-semibold text-zinc-900 dark:text-zinc-50 leading-tight">Financial Trajectory</h3>
+                                            <p className="text-[10px] text-zinc-400 font-medium">Burn Rate & Projection</p>
                                         </div>
                                         <div className="flex items-center bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 p-0.5 rounded-full">
                                             {[7, 30, 90].map((d) => (
