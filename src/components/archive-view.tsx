@@ -28,24 +28,31 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
     const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isWiggling, setIsWiggling] = useState<'csv' | 'json' | null>(null);
 
     const filteredTransactions = useMemo(() => {
-        return localTransactions.filter(t => {
-            const matchesSearch =
-                (t.merchant?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-                (t.category?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-                (t.description?.toLowerCase() || "").includes(searchQuery.toLowerCase());
+        return localTransactions
+            .filter(t => {
+                const matchesSearch =
+                    (t.merchant?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+                    (t.category?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+                    (t.description?.toLowerCase() || "").includes(searchQuery.toLowerCase());
 
-            const matchesType = filterType === 'all' || t.type === filterType;
-            const date = t.date ? t.date.split('T')[0] : '';
-            const matchesDate = (!startDate || date >= startDate) && (!endDate || date <= endDate);
+                const matchesType = filterType === 'all' || t.type === filterType;
+                const date = t.date ? t.date.split('T')[0] : '';
+                const matchesDate = (!startDate || date >= startDate) && (!endDate || date <= endDate);
 
-            return matchesSearch && matchesType && matchesDate;
-        });
-    }, [localTransactions, searchQuery, filterType, startDate, endDate]);
+                return matchesSearch && matchesType && matchesDate;
+            })
+            .sort((a, b) => {
+                const dateA = new Date(a.date || 0).getTime();
+                const dateB = new Date(b.date || 0).getTime();
+                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+            });
+    }, [localTransactions, searchQuery, filterType, startDate, endDate, sortOrder]);
 
     const confirmDelete = async () => {
         if (!deleteId) return;
@@ -233,9 +240,19 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
                     <div className="flex items-center gap-4">
                         <h3 className="text-xl font-serif">Full Journal</h3>
                         <div className="h-px bg-zinc-200 dark:bg-zinc-800 flex-grow" />
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                            <History className="w-3 h-3" /> Descending
-                        </div>
+                        <button
+                            onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                            className="flex items-center gap-2 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors group"
+                        >
+                            <div className={`flex items-center gap-2 px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${sortOrder === 'desc' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 shadow-sm' : 'text-zinc-400 group-hover:text-zinc-600'}`}>
+                                <History className={`w-3 h-3 ${sortOrder === 'desc' ? 'text-zinc-900 dark:text-zinc-50' : ''}`} />
+                                <span>Recent first</span>
+                            </div>
+                            <div className={`flex items-center gap-2 px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${sortOrder === 'asc' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 shadow-sm' : 'text-zinc-400 group-hover:text-zinc-600'}`}>
+                                <Calendar className={`w-3 h-3 ${sortOrder === 'asc' ? 'text-zinc-900 dark:text-zinc-50' : ''}`} />
+                                <span>Oldest first</span>
+                            </div>
+                        </button>
                     </div>
 
                     <AnimatePresence mode="popLayout">
