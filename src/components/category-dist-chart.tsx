@@ -143,8 +143,8 @@ export function CategoryDistChart({ data }: { data: CategoryData[] }) {
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     className="flex flex-col items-center"
                                 >
-                                    <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-[0.3em] mb-1">Monthly Total</span>
-                                    <span className="text-sm font-serif font-bold text-zinc-900 dark:text-zinc-50">
+                                    <span className="text-[7.5px] text-zinc-400 font-bold uppercase tracking-[0.2em] mb-0.5">Monthly Total</span>
+                                    <span className="text-[13px] font-serif font-bold text-zinc-900 dark:text-zinc-50">
                                         ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                                     </span>
                                 </motion.div>
@@ -156,13 +156,13 @@ export function CategoryDistChart({ data }: { data: CategoryData[] }) {
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     className="flex flex-col items-center"
                                 >
-                                    <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mb-1 max-w-[90px] truncate text-center">
+                                    <span className="text-[7.5px] text-zinc-400 font-bold uppercase tracking-widest mb-0.5 max-w-[80px] truncate text-center">
                                         {chartData[activeIndex]?.name}
                                     </span>
-                                    <span className="text-sm font-serif font-bold text-zinc-900 dark:text-zinc-50">
+                                    <span className="text-[13px] font-serif font-bold text-zinc-900 dark:text-zinc-50">
                                         ${chartData[activeIndex]?.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                                     </span>
-                                    <span className="text-[9px] text-emerald-500 font-bold mt-0.5">
+                                    <span className="text-[8px] text-emerald-500 font-bold mt-0.5">
                                         {chartData[activeIndex]?.percentage}%
                                     </span>
                                 </motion.div>
