@@ -19,7 +19,16 @@ function SubmitButton({ disabled }: { disabled?: boolean }) {
             <Button
                 type="submit"
                 size="icon"
-                className="rounded-full bg-emerald-600 hover:bg-emerald-700 shrink-0 disabled:opacity-50 disabled:bg-zinc-300 dark:disabled:bg-zinc-700"
+                className="rounded-full bg-emerald-600 hover:bg-emerald-700 shrink-0 disabled:opacity-50 disabled:bg-zinc-300 dark:disabled:bg-zinc-700 shadow-md hover:shadow-lg transition-all"
+                style={{ boxShadow: '0 4px 14px 0 rgb(16 185 129 / 0.39)' }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    if (!e.currentTarget.disabled) {
+                        e.currentTarget.style.boxShadow = 'var(--glow-emerald-strong)';
+                    }
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    e.currentTarget.style.boxShadow = '0 4px 14px 0 rgb(16 185 129 / 0.39)';
+                }}
                 disabled={pending || disabled}
             >
                 {pending ? (
@@ -64,7 +73,7 @@ export function CommandBar({ hasAiKey = false, onImportCSV }: { hasAiKey?: boole
     };
 
     return (
-        <div className="w-full max-w-2xl mx-auto">
+        <div className="w-full max-w-2xl mx-auto relative">
             {/* Search Bar Container */}
             <div className="relative group z-20 mb-4">
                 <div className={`absolute -inset-1 bg-gradient-to-r ${hasAiKey ? 'from-emerald-500 to-teal-500' : 'from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-700'} rounded-full blur opacity-15 group-hover:opacity-30 transition duration-1000 group-hover:duration-200`}></div>
@@ -104,7 +113,7 @@ export function CommandBar({ hasAiKey = false, onImportCSV }: { hasAiKey?: boole
                         name="input"
                         ref={inputRef}
                         disabled={!hasAiKey}
-                        className={`flex-1 border-none shadow-none focus-visible:ring-0 bg-transparent text-lg placeholder:text-zinc-400 h-10 px-2 ${!hasAiKey ? 'cursor-not-allowed opacity-50' : ''}`}
+                        className={`flex-1 border-none shadow-none focus-visible:ring-0 bg-transparent text-[19px] placeholder:text-zinc-400 h-10 px-2 font-medium ${!hasAiKey ? 'cursor-not-allowed opacity-50' : ''}`}
                         placeholder={hasAiKey ? "Search transactions..." : "AI Extraction Locked (Check Settings)"}
                         autoComplete="off"
                     />
@@ -173,7 +182,7 @@ export function CommandBar({ hasAiKey = false, onImportCSV }: { hasAiKey?: boole
 
                 {/* Secondary Toggles Group */}
                 <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end">
-                    <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${hasAiKey ? 'bg-emerald-50/50 dark:bg-emerald-950/10 border-emerald-100 dark:border-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-zinc-50 dark:bg-zinc-900/30 border-zinc-100 dark:border-zinc-800 text-zinc-400'}`}>
+                    <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${hasAiKey ? 'bg-emerald-100/80 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-400' : 'bg-zinc-50 dark:bg-zinc-900/30 border-zinc-100 dark:border-zinc-800 text-zinc-400'}`}>
                         <Sparkles className="w-2.5 h-2.5" />
                         <span className="text-[10px] font-bold uppercase tracking-widest">{hasAiKey ? "AI Assist Enabled" : "AI Assist Off"}</span>
                     </div>
@@ -192,22 +201,31 @@ export function CommandBar({ hasAiKey = false, onImportCSV }: { hasAiKey?: boole
                 </div>
             </div>
 
-            {/* Manual Entry Form Expandable Area */}
+            {/* Manual Entry Form - Inline Dropdown */}
             <AnimatePresence>
                 {showManual && (
                     <motion.div
-                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                        animate={{ opacity: 1, height: "auto", marginTop: 16 }}
-                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                        transition={{
-                            type: "spring",
-                            stiffness: 300,
-                            damping: 30,
-                            opacity: { duration: 0.2 }
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{
+                            opacity: 1,
+                            height: "auto",
+                            transitionEnd: { overflow: "visible" }
                         }}
-                        className="overflow-hidden"
+                        exit={{
+                            opacity: 0,
+                            height: 0,
+                            overflow: "hidden"
+                        }}
+                        transition={{
+                            height: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+                            opacity: { duration: 0.3 }
+                        }}
+                        className="overflow-hidden bg-transparent"
                     >
-                        <ManualEntryForm onComplete={() => setShowManual(false)} />
+                        {/* Balanced Spacing: Tight but breathable for animations */}
+                        <div className="pt-6 pb-6">
+                            <ManualEntryForm onComplete={() => setShowManual(false)} />
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>

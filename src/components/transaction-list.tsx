@@ -147,7 +147,7 @@ export function TransactionList({ transactions, showDelete = false, showCategori
             )}
             <div className="space-y-2">
                 <AnimatePresence mode="popLayout">
-                    {activeTransactions.map((t: Transaction, i) => (
+                    {activeTransactions.slice(0, 50).map((t: Transaction, i) => (
                         <motion.div
                             key={t.id}
                             layout
@@ -162,7 +162,7 @@ export function TransactionList({ transactions, showDelete = false, showCategori
                                 opacity: { duration: 0.2 }
                             }}
                         >
-                            <div className="group relative p-4 flex items-center justify-between transition-all duration-300 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 rounded-xl cursor-default border border-transparent hover:border-zinc-100 dark:hover:border-zinc-800">
+                            <div className="group relative p-4 flex items-center justify-between transition-[transform,opacity] duration-300 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 rounded-xl cursor-default border border-transparent hover:border-zinc-100 dark:hover:border-zinc-800">
                                 <div className="flex items-center gap-5">
                                     <div
                                         className={`w-11 h-11 rounded-full flex items-center justify-center text-[10px] font-bold tracking-tighter text-white
@@ -238,23 +238,34 @@ export function TransactionList({ transactions, showDelete = false, showCategori
                 </AnimatePresence>
             </div>
 
-            <div className="flex items-center justify-between pt-6 border-t border-zinc-50 dark:border-zinc-900">
-                <div className="flex gap-4">
+            <div className="mt-12 flex items-center justify-center h-10 border-t border-zinc-50 dark:border-zinc-900">
+                <div className="flex items-center gap-6">
                     <button
                         onClick={() => exportData('csv')}
-                        className="text-[9px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest hover:text-zinc-900 dark:hover:text-zinc-300 flex items-center gap-1.5 transition-colors"
+                        className="group flex items-center gap-2 h-6 px-2 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                     >
-                        <Download className="w-2.5 h-2.5" /> CSV Export
+                        <Download className="w-3 h-3 text-zinc-400 group-hover:text-emerald-500 transition-colors" />
+                        <span className="text-[10px] font-medium text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 uppercase tracking-widest leading-none pt-[1px] transition-colors">CSV</span>
                     </button>
+
                     <button
                         onClick={() => exportData('json')}
-                        className="text-[9px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest hover:text-zinc-900 dark:hover:text-zinc-300 flex items-center gap-1.5 transition-colors"
+                        className="group flex items-center gap-2 h-6 px-2 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                     >
-                        <Download className="w-2.5 h-2.5" /> JSON Export
+                        <Download className="w-3 h-3 text-zinc-400 group-hover:text-emerald-500 transition-colors" />
+                        <span className="text-[10px] font-medium text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 uppercase tracking-widest leading-none pt-[1px] transition-colors">JSON</span>
                     </button>
-                </div>
-                <div className="text-[9px] font-bold text-zinc-300 dark:text-zinc-700 uppercase tracking-widest">
-                    {activeTransactions.length} Entries
+
+                    <div className="h-3 w-px bg-zinc-100 dark:bg-zinc-800" />
+
+                    <div className="flex items-center gap-2 h-6 px-2">
+                        <span className="text-[10px] font-medium text-zinc-300 dark:text-zinc-700 uppercase tracking-widest leading-none pt-[1px] tabular-nums">
+                            {activeTransactions.length}
+                        </span>
+                        <span className="text-[10px] font-medium text-zinc-300 dark:text-zinc-700 uppercase tracking-widest leading-none pt-[1px]">
+                            {activeTransactions.length === 1 ? 'Record' : 'Records'}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div >

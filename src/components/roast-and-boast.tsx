@@ -61,10 +61,10 @@ export function RoastAndBoast({ transactions, budget = 1000 }: RoastAndBoastProp
     }
 
     return (
-        <div className={`p-8 rounded-3xl border transition-all duration-700 backdrop-blur-sm ${type === 'roast'
-            ? 'bg-orange-50/50 border-orange-200 dark:bg-orange-950/10 dark:border-orange-900/20 shadow-sm'
-            : 'bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/10 dark:border-emerald-900/20 shadow-sm'
-            }`}>
+        <div className={`p-8 rounded-3xl border transition-[transform,box-shadow,opacity] duration-700 backdrop-blur-sm ${type === 'roast'
+            ? 'bg-orange-50/50 border-orange-200 dark:bg-orange-950/10 dark:border-orange-900/30'
+            : 'bg-emerald-50/50 border-emerald-200 dark:bg-emerald-950/10 dark:border-emerald-900/30'
+            }`} style={{ boxShadow: 'var(--shadow-md)' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-lg)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}>
             {!isMounted ? (
                 <div className="h-24 flex items-center justify-center">
                     <div className="w-4 h-4 rounded-full border-2 border-zinc-200 border-t-zinc-400 animate-spin" />
@@ -81,7 +81,7 @@ export function RoastAndBoast({ transactions, budget = 1000 }: RoastAndBoastProp
                     </div>
 
                     <div className="space-y-2">
-                        <h3 className="text-2xl font-serif tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
+                        <h3 className="text-2xl font-serif tracking-tight font-semibold text-zinc-900 dark:text-zinc-50 leading-tight">
                             {type === 'roast' ? 'Adjustment Recommended' : 'Optimal Performance'}
                         </h3>
                         <p className="text-sm text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed border-l-2 border-zinc-200 dark:border-zinc-800 pl-4">

@@ -143,21 +143,51 @@ export default async function Home() {
     volume: volumeDelta
   };
 
-  // Category Data
-  const categoryMap: Record<string, number> = {};
+  // Category Data (Expense)
+  const categoryMap: Record<string, { value: number; count: number }> = {};
   currentMonthExpenses.forEach(t => {
-    const val = Number(t.amount);
-    if (val > 0) {
+    const val = Number(t.amount) || 0;
+    if (val !== 0) {
       const cat = t.category || 'Other';
-      categoryMap[cat] = (categoryMap[cat] || 0) + val;
+      if (!categoryMap[cat]) {
+        categoryMap[cat] = { value: 0, count: 0 };
+      }
+      categoryMap[cat].value += val;
+      categoryMap[cat].count += 1;
     }
   });
 
   const categoryData = Object.entries(categoryMap)
-    .map(([name, value]) => ({ name, value, color: '#10B981' }))
+    .filter(([_, data]) => data.value > 0)
+    .map(([name, data]) => ({ name, value: data.value, count: data.count, color: '#10B981' }))
     .sort((a, b) => b.value - a.value)
     .map((item, index) => {
       const colors = ['#10B981', '#3B82F6', '#F59E0B', '#F43F5E', '#8B5CF6', '#71717A'];
+      return { ...item, color: colors[index % colors.length] };
+    });
+
+  // Category Data (Income)
+  const incomeCategoryMap: Record<string, { value: number; count: number }> = {};
+  const currentMonthIncomeList = analysisTransactions.filter(t => t.type === 'income' && t.date && t.date.startsWith(currentMonthStr));
+
+  currentMonthIncomeList.forEach(t => {
+    const val = Number(t.amount) || 0;
+    if (val !== 0) {
+      const cat = t.category || 'Other';
+      if (!incomeCategoryMap[cat]) {
+        incomeCategoryMap[cat] = { value: 0, count: 0 };
+      }
+      incomeCategoryMap[cat].value += val;
+      incomeCategoryMap[cat].count += 1;
+    }
+  });
+
+  const incomeCategoryData = Object.entries(incomeCategoryMap)
+    .filter(([_, data]) => data.value > 0)
+    .map(([name, data]) => ({ name, value: data.value, count: data.count, color: '#10B981' }))
+    .sort((a, b) => b.value - a.value)
+    .map((item, index) => {
+      const colors = ['#8B5CF6', '#EC4899', '#6366F1', '#14B8A6', '#F59E0B', '#71717A']; // Different palette for income
       return { ...item, color: colors[index % colors.length] };
     });
 
@@ -195,6 +225,7 @@ export default async function Home() {
       insights={insightsData}
       deltas={deltas}
       categoryData={categoryData}
+      incomeCategoryData={incomeCategoryData}
     />
   );
 }

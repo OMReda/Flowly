@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { LogOut, User as UserIcon, DollarSign, Wallet, CreditCard, ArrowRight, Settings, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
@@ -36,6 +36,7 @@ interface DashboardLayoutProps {
     insights?: DeterministicInsights;
     deltas?: { spent: number | null; net: number | null; volume: number | null };
     categoryData?: { name: string; value: number; color: string }[];
+    incomeCategoryData?: { name: string; value: number; color: string }[];
     totalCount: number;
 }
 
@@ -51,6 +52,7 @@ export function DashboardLayout({
     insights,
     deltas,
     categoryData,
+    incomeCategoryData,
     totalCount
 }: DashboardLayoutProps) {
     const [showOnboarding, setShowOnboarding] = useState(false);
@@ -58,6 +60,7 @@ export function DashboardLayout({
     const [showSettings, setShowSettings] = useState(false);
     const [showCSVImport, setShowCSVImport] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const [breakdownType, setBreakdownType] = useState<'expense' | 'income'>('expense');
 
     useEffect(() => {
         setMounted(true);
@@ -106,14 +109,14 @@ export function DashboardLayout({
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-zinc-950 font-sans text-zinc-900 dark:text-zinc-100 transition-colors duration-500" data-developer="OMRed">
+        <div className="min-h-screen bg-white dark:bg-zinc-950 font-sans text-zinc-900 dark:text-zinc-100" data-developer="OMRed">
             <div className="p-4 sm:p-8 lg:p-12 max-w-6xl mx-auto space-y-12">
 
                 {/* Header */}
                 <motion.header
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-8 pb-8 border-b border-zinc-100 dark:border-zinc-900"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-8 pb-8 border-b border-zinc-200 dark:border-zinc-800"
                 >
                     <div className="flex items-center gap-6">
                         <Logo className="w-12 h-12" />
@@ -168,7 +171,7 @@ export function DashboardLayout({
                     className="relative z-10"
                 >
                     <div className="relative pl-6 mb-4">
-                        <div className="absolute top-1 bottom-1 left-0 w-1 bg-emerald-500/30 rounded-full" />
+                        <div className="absolute top-1 bottom-1 left-0 w-1 bg-emerald-500/50 rounded-full" style={{ boxShadow: '0 0 6px rgb(16 185 129 / 0.25)' }} />
                         <p className="text-xs font-bold text-zinc-400 uppercase tracking-[0.3em]">
                             {hasAiKey ? "Transaction Ledger" : "Standard Ledger"}
                         </p>
@@ -188,7 +191,10 @@ export function DashboardLayout({
                             <motion.div
                                 key={kpi.label}
                                 whileHover={{ y: -5 }}
-                                className="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-500 group relative overflow-hidden"
+                                className="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 transition-[transform,box-shadow,opacity] duration-500 group relative overflow-hidden"
+                                style={{ boxShadow: 'var(--shadow-md)' }}
+                                onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-xl)'}
+                                onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}
                             >
                                 <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br transition-all duration-700 opacity-0 group-hover:opacity-20 -mr-16 -mt-16 blur-3xl ${kpi.color === 'emerald' ? 'from-emerald-500' : 'from-rose-500'}`} />
                                 <div className="flex justify-between items-start mb-6">
@@ -196,7 +202,7 @@ export function DashboardLayout({
                                     <kpi.icon className="w-4 h-4 text-zinc-300 group-hover:text-emerald-500 transition-colors" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className={`text-4xl font-serif tracking-tight ${kpi.color === 'rose' ? 'text-rose-500 font-medium' : 'text-zinc-900 dark:text-zinc-50'}`}>
+                                    <h3 className={`text-4xl font-serif tracking-tight font-semibold ${kpi.color === 'rose' ? 'text-rose-500' : 'text-zinc-900 dark:text-zinc-50'}`}>
                                         <div className="flex items-baseline gap-2">
                                             <NumberFlow
                                                 value={kpi.value}
@@ -229,15 +235,18 @@ export function DashboardLayout({
                             >
                                 {/* Financial Trajectory (2/3 width) */}
                                 <motion.div
-                                    whileHover={{ y: -4, scale: 1.002 }}
+                                    whileHover={{ y: -8 }}
                                     transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                                    className="md:col-span-2 flex flex-col h-full bg-white dark:bg-zinc-950 rounded-[24px] border border-zinc-100 dark:border-zinc-900 shadow-sm p-6 relative overflow-hidden group"
+                                    className="md:col-span-2 flex flex-col h-full bg-white dark:bg-zinc-950 rounded-[24px] border border-zinc-200 dark:border-zinc-800 p-6 relative overflow-hidden group"
+                                    style={{ boxShadow: 'var(--shadow-md)' }}
+                                    onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-xl)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}
                                 >
                                     <div className="flex items-center justify-between mb-6 z-10 relative">
                                         <div className="flex items-center gap-4 pl-3">
-                                            <div className="absolute top-6 bottom-6 left-0 w-1 bg-emerald-500/30 rounded-full" />
+                                            {/* Line removed for cleaner UI */}
                                             <div>
-                                                <h3 className="text-lg font-serif tracking-tight text-zinc-900 dark:text-zinc-50">Financial Trajectory</h3>
+                                                <h3 className="text-lg font-serif tracking-tight font-semibold text-zinc-900 dark:text-zinc-50">Financial Trajectory</h3>
                                                 <p className="text-[10px] text-zinc-400 font-medium">Burn Rate & Projection</p>
                                             </div>
                                         </div>
@@ -258,28 +267,105 @@ export function DashboardLayout({
                                     <div className="flex-1 min-h-[300px] w-full relative z-10">
                                         <BurnRateChart transactions={allTransactions} budget={budget} days={chartDays} />
                                     </div>
-                                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                                    {/* Moving Particles (Mesh Blobs) */}
+                                    <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-50">
+                                        <motion.div
+                                            animate={{
+                                                x: [0, 20, -20, 0],
+                                                y: [0, -20, 20, 0],
+                                                scale: [1, 1.1, 0.9, 1],
+                                            }}
+                                            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                                            className="absolute -top-10 -right-10 w-48 h-48 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-[60px]"
+                                        />
+                                    </div>
                                 </motion.div>
 
                                 {/* Category Distribution (1/3 width) */}
                                 <motion.div
-                                    whileHover={{ y: -4, scale: 1.005 }}
+                                    whileHover={{ y: -8 }}
                                     transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                                     className="md:col-span-1 h-full"
                                 >
-                                    <div className="h-full bg-white dark:bg-zinc-950 rounded-[24px] border border-zinc-100 dark:border-zinc-900 shadow-sm relative overflow-hidden group hover:border-zinc-200 dark:hover:border-zinc-800 transition-colors flex flex-col p-6">
+                                    <div className="h-full bg-white dark:bg-zinc-950 rounded-[24px] border border-zinc-200 dark:border-zinc-800 relative overflow-hidden group transition-all flex flex-col p-6" style={{ boxShadow: 'var(--shadow-md)' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-xl)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}>
                                         <div className="flex items-center justify-between mb-6 z-10 relative">
                                             <div className="flex items-center gap-4 pl-3">
-                                                <div className="absolute top-6 bottom-6 left-0 w-1 bg-indigo-500/30 rounded-full" />
+                                                <div className={`absolute top-6 bottom-6 left-0 w-1 rounded-full shadow-sm transition-colors duration-500 ${breakdownType === 'expense' ? 'bg-indigo-500/50' : 'bg-pink-500/50'}`} style={{ boxShadow: `0 0 8px ${breakdownType === 'expense' ? 'rgb(99 102 241 / 0.3)' : 'rgb(236 72 153 / 0.3)'}` }} />
                                                 <div>
-                                                    <h3 className="text-lg font-serif tracking-tight text-zinc-900 dark:text-zinc-50">Spending Mix</h3>
-                                                    <p className="text-[10px] text-zinc-400 font-medium">Expense Breakdown</p>
+                                                    <h3 className="text-lg font-serif tracking-tight font-semibold text-zinc-900 dark:text-zinc-50">Spending Mix</h3>
+                                                    <p className="text-[10px] text-zinc-400 font-medium">
+                                                        <span
+                                                            onClick={() => setBreakdownType('expense')}
+                                                            className={`cursor-pointer transition-colors ${breakdownType === 'expense' ? 'text-zinc-600 dark:text-zinc-300 font-bold' : 'hover:text-zinc-500'}`}
+                                                        >
+                                                            Expense
+                                                        </span>
+                                                        <span className="mx-1">/</span>
+                                                        <span
+                                                            onClick={() => setBreakdownType('income')}
+                                                            className={`cursor-pointer transition-colors ${breakdownType === 'income' ? 'text-zinc-600 dark:text-zinc-300 font-bold' : 'hover:text-zinc-500'}`}
+                                                        >
+                                                            Income
+                                                        </span>
+                                                    </p>
                                                 </div>
                                             </div>
+
+                                            {/* Toggle Switch */}
+                                            <div className="flex bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 p-0.5 rounded-full">
+                                                <button
+                                                    onClick={() => setBreakdownType('expense')}
+                                                    className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${breakdownType === 'expense' ? 'bg-white dark:bg-zinc-800 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' : 'text-zinc-400 hover:text-zinc-600'}`}
+                                                >
+                                                    <TrendingDown className={`w-3 h-3 ${breakdownType === 'expense' ? 'text-indigo-500' : 'text-current'}`} />
+                                                </button>
+                                                <button
+                                                    onClick={() => setBreakdownType('income')}
+                                                    className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${breakdownType === 'income' ? 'bg-white dark:bg-zinc-800 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' : 'text-zinc-400 hover:text-zinc-600'}`}
+                                                >
+                                                    <TrendingUp className={`w-3 h-3 ${breakdownType === 'income' ? 'text-pink-500' : 'text-current'}`} />
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-20" />
+                                        {/* Moving Particles (Mesh Blobs) */}
+                                        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-50">
+                                            <motion.div
+                                                animate={{
+                                                    x: [0, -15, 15, 0],
+                                                    y: [0, 15, -15, 0],
+                                                    scale: [1, 0.9, 1.1, 1],
+                                                }}
+                                                transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                                                className={`absolute -bottom-10 -left-10 w-48 h-48 rounded-full blur-[60px] transition-colors duration-500 ${breakdownType === 'expense' ? 'bg-indigo-500/10 dark:bg-indigo-500/5' : 'bg-pink-500/10 dark:bg-pink-500/5'}`}
+                                            />
+                                        </div>
+                                        <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r opacity-20 transition-colors duration-500 ${breakdownType === 'expense' ? 'from-indigo-500 via-purple-500 to-pink-500' : 'from-pink-500 via-purple-500 to-indigo-500'}`} />
                                         <div className="flex-1 w-full relative z-10 min-h-[300px]">
-                                            <CategoryDistChart data={categoryData || []} />
+                                            <AnimatePresence mode="wait">
+                                                {breakdownType === 'expense' ? (
+                                                    <motion.div
+                                                        key="expense"
+                                                        initial={{ opacity: 0, x: -20 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        exit={{ opacity: 0, x: 20 }}
+                                                        transition={{ duration: 0.3 }}
+                                                        className="h-full w-full"
+                                                    >
+                                                        <CategoryDistChart data={categoryData || []} />
+                                                    </motion.div>
+                                                ) : (
+                                                    <motion.div
+                                                        key="income"
+                                                        initial={{ opacity: 0, x: 20 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        exit={{ opacity: 0, x: -20 }}
+                                                        transition={{ duration: 0.3 }}
+                                                        className="h-full w-full"
+                                                    >
+                                                        <CategoryDistChart data={incomeCategoryData || []} />
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                         </div>
                                     </div>
                                 </motion.div>

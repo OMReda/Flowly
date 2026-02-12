@@ -29,7 +29,7 @@ export function NumberFlow({ value, prefix = "", suffix = "", decimals = 2, clas
     }, [value]);
 
     return (
-        <span className={className}>
+        <span className={`font-semibold tracking-tight tabular-nums ${className}`} style={{ fontVariantNumeric: 'tabular-nums', fontFeatureSettings: '"tnum"' }}>
             {prefix}{isMounted ? displayValue.toLocaleString('en-US', {
                 minimumFractionDigits: decimals,
                 maximumFractionDigits: decimals

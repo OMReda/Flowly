@@ -63,7 +63,10 @@ export default function LoginPage() {
                                     name="email"
                                     type="email"
                                     placeholder="Enter your email"
-                                    className="h-12 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 rounded-none px-0 focus-visible:ring-0 focus-visible:border-emerald-500 dark:focus-visible:border-emerald-400 transition-all text-base placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
+                                    className="h-12 bg-transparent border-0 border-b-2 border-zinc-200 dark:border-zinc-800 rounded-none px-0 focus-visible:ring-0 focus-visible:border-emerald-500 dark:focus-visible:border-emerald-400 transition-all text-base placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
+                                    style={{ transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                                    onFocus={(e) => e.currentTarget.style.boxShadow = '0 2px 8px rgb(16 185 129 / 0.15)'}
+                                    onBlur={(e) => e.currentTarget.style.boxShadow = 'none'}
                                     required
                                 />
                             </div>
@@ -75,7 +78,10 @@ export default function LoginPage() {
                                 <Input
                                     name="password"
                                     type="password"
-                                    className="h-12 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 rounded-none px-0 focus-visible:ring-0 focus-visible:border-emerald-500 dark:focus-visible:border-emerald-400 transition-all text-base"
+                                    className="h-12 bg-transparent border-0 border-b-2 border-zinc-200 dark:border-zinc-800 rounded-none px-0 focus-visible:ring-0 focus-visible:border-emerald-500 dark:focus-visible:border-emerald-400 transition-all text-base"
+                                    style={{ transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                                    onFocus={(e) => e.currentTarget.style.boxShadow = '0 2px 8px rgb(16 185 129 / 0.15)'}
+                                    onBlur={(e) => e.currentTarget.style.boxShadow = 'none'}
                                     required
                                 />
                             </div>
@@ -102,6 +108,9 @@ export default function LoginPage() {
                                 className="w-full h-14 bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 text-white rounded-none flex items-center justify-center gap-2 text-xs font-bold tracking-widest uppercase transition-all relative overflow-hidden active:scale-[0.98] hover:bg-zinc-900 dark:hover:bg-zinc-100"
                                 type="submit"
                                 disabled={isPending}
+                                style={{ boxShadow: 'var(--shadow-lg)' }}
+                                onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-xl)'}
+                                onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-lg)'}
                             >
                                 <span className="relative z-10 flex items-center gap-2">
                                     {isPending ? "Verification..." : "Sign In"}

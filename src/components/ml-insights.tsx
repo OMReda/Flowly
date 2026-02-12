@@ -29,7 +29,7 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
     const statusStyle = getStatusLabel(data.status, data.confidence);
 
     return (
-        <div className="p-8 rounded-3xl border border-indigo-100/50 bg-indigo-50/10 dark:bg-indigo-950/5 dark:border-indigo-900/20 backdrop-blur-md transition-all duration-700 hover:shadow-2xl hover:shadow-indigo-500/5">
+        <div className="p-8 rounded-3xl border border-indigo-200/60 dark:border-indigo-900/30 bg-indigo-50/10 dark:bg-indigo-950/5 backdrop-blur-md transition-[transform,box-shadow,opacity] duration-700" style={{ boxShadow: 'var(--shadow-md)' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-xl)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}>
             <div className="space-y-8">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -43,7 +43,7 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
                                     {statusStyle.label}
                                 </span>
                             </div>
-                            <h3 className="text-xl font-serif tracking-tight text-zinc-900 dark:text-zinc-50">Spending Analysis</h3>
+                            <h3 className="text-xl font-serif tracking-tight font-semibold text-zinc-900 dark:text-zinc-50">Spending Analysis</h3>
                         </div>
                     </div>
                     <div className="text-right">
@@ -55,7 +55,7 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
                             <div className="flex items-baseline gap-1">
                                 <NumberFlow
                                     value={data.flowly_score}
-                                    className="text-2xl font-serif text-indigo-500/80"
+                                    className="text-2xl font-serif font-semibold text-indigo-600 dark:text-indigo-400"
                                 />
                                 <span className="text-[10px] text-zinc-400 font-medium">/100</span>
                             </div>
@@ -68,7 +68,7 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
 
                 <div className="grid grid-cols-1 gap-6">
                     {/* Forecast Section */}
-                    <div className="group relative p-8 bg-white dark:bg-zinc-900/40 rounded-2xl border border-indigo-50 dark:border-indigo-900/20 shadow-sm transition-all hover:border-indigo-500/30 ml-4">
+                    <div className="group relative p-8 bg-white dark:bg-zinc-900/40 rounded-2xl border border-indigo-100 dark:border-indigo-900/30 transition-all" style={{ boxShadow: 'var(--shadow-sm)' }} onMouseEnter={(e) => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.borderColor = 'rgb(99 102 241 / 0.3)'; }} onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; e.currentTarget.style.borderColor = ''; }}>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-3">
@@ -96,13 +96,13 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
                                 )}
                             </div>
                         </div>
-                        <div className="absolute top-8 bottom-8 left-3 w-1 bg-gradient-to-b from-indigo-500/80 via-indigo-500/30 to-transparent rounded-full" />
+                        <div className="absolute top-6 bottom-6 left-0 w-1 bg-gradient-to-b from-indigo-500 to-indigo-600 rounded-r-full shadow-[0_0_12px_rgba(99,102,241,0.5)]" />
                     </div>
 
                     {/* Insights Section (Causality & Recovery) */}
                     {data.insights && data.insights.length > 0 && (
                         <div className="space-y-4 relative pl-3">
-                            <div className="absolute top-0 bottom-0 left-0 w-1 bg-gradient-to-b from-emerald-500/80 via-emerald-500/30 to-transparent rounded-full" />
+                            <div className="absolute top-0 bottom-0 left-0 w-1 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-r-full shadow-[0_0_12px_rgba(16,185,129,0.5)]" />
                             <div className="flex items-center gap-3 pl-1">
                                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                                 <p className="text-[10px] font-bold tracking-[0.2em] text-emerald-500 uppercase">Actionable Insights</p>
