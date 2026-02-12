@@ -8,6 +8,7 @@ import { deleteTransaction } from "@/app/actions/delete-transaction";
 import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 import { Logo } from "@/components/logo";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Transaction } from "@/lib/types";
 
@@ -29,6 +30,7 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
     const [endDate, setEndDate] = useState("");
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isWiggling, setIsWiggling] = useState<'csv' | 'json' | null>(null);
 
     const filteredTransactions = useMemo(() => {
         return localTransactions.filter(t => {
@@ -66,6 +68,14 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
     };
 
     const downloadCSV = () => {
+        if (filteredTransactions.length === 0) {
+            setIsWiggling('csv');
+            setTimeout(() => setIsWiggling(null), 500);
+            toast.error("Nothing to export", {
+                description: "Your filtered list is empty. Add transactions or adjust filters."
+            });
+            return;
+        }
         const headers = ["Date", "Merchant", "Category", "Amount", "Type", "Description"];
         const rows = filteredTransactions.map(t => [
             t.date,
@@ -86,6 +96,14 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
     };
 
     const downloadJSON = () => {
+        if (filteredTransactions.length === 0) {
+            setIsWiggling('json');
+            setTimeout(() => setIsWiggling(null), 500);
+            toast.error("Nothing to export", {
+                description: "Your filtered list is empty. Add transactions or adjust filters."
+            });
+            return;
+        }
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(filteredTransactions, null, 2));
         const link = document.createElement("a");
         link.setAttribute("href", dataStr);
@@ -120,20 +138,24 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
                             <ArrowLeft className="w-3 h-3 mr-1" />
                             Dashboard
                         </Link>
-                        <button
+                        <motion.button
+                            animate={isWiggling === 'csv' ? { x: [-4, 4, -4, 4, 0] } : {}}
+                            transition={{ duration: 0.4 }}
                             onClick={downloadCSV}
                             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm"
                         >
                             <Download className="w-3.5 h-3.5" />
                             <span>Export CSV</span>
-                        </button>
-                        <button
+                        </motion.button>
+                        <motion.button
+                            animate={isWiggling === 'json' ? { x: [-4, 4, -4, 4, 0] } : {}}
+                            transition={{ duration: 0.4 }}
                             onClick={downloadJSON}
                             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm"
                         >
                             <Download className="w-3.5 h-3.5" />
                             <span>Export JSON</span>
-                        </button>
+                        </motion.button>
                     </div>
                 </div>
 

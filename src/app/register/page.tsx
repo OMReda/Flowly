@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowRight, Moon, Check } from "lucide-react";
+import { AlertCircle, ArrowRight, Check } from "lucide-react";
 import { AuthHero } from "@/components/auth-hero";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function RegisterPage() {
     const [state, action, isPending] = useActionState(register, null);
@@ -29,15 +30,13 @@ export default function RegisterPage() {
     ];
 
     return (
-        <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white dark:bg-zinc-950 font-sans text-zinc-900 dark:text-zinc-50">
+        <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white dark:bg-zinc-950 font-sans text-zinc-900 dark:text-zinc-50 transition-colors duration-500">
             <AuthHero />
 
             {/* Right Side: Form Section */}
             <div className="flex flex-col justify-center items-center p-8 sm:p-12 lg:p-20 relative">
                 <div className="absolute top-8 right-8">
-                    <Button variant="ghost" size="icon" className="rounded-full">
-                        <Moon className="w-5 h-5 text-zinc-400" />
-                    </Button>
+                    <ThemeToggle />
                 </div>
 
                 <div className="w-full max-w-sm space-y-10">

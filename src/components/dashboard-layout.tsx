@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { LogOut, User as UserIcon, DollarSign, Wallet, CreditCard, ArrowRight, Settings, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandBar } from "@/components/command-bar";
 import { BurnRateChart } from "@/components/burn-rate-chart";
 import { RoastAndBoast } from "@/components/roast-and-boast";
@@ -147,6 +148,7 @@ export function DashboardLayout({
                                 <UserIcon className="w-4 h-4 text-zinc-400" />
                             </div>
                         </div>
+                        <ThemeToggle />
                         <Button onClick={() => setShowSettings(true)} variant="ghost" size="icon" className="group rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-transparent hover:border-zinc-100 dark:hover:border-zinc-800">
                             <Settings className="w-4 h-4 text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-50 transition-colors" />
                         </Button>
@@ -338,23 +340,24 @@ export function DashboardLayout({
                                     </Link>
                                 </motion.div>
                             </div>
-
-                            {/* Artist Credit */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 1 }}
-                                className="pt-12 flex items-center gap-2"
-                            >
-                                <div className="w-1 h-1 rounded-full bg-emerald-500/50" />
-                                <p className="text-[10px] font-bold tracking-[0.2em] text-zinc-300 dark:text-zinc-700 uppercase">
-                                    Developed by <span className="text-zinc-400 dark:text-zinc-600">OMRed</span>
-                                </p>
-                            </motion.div>
                         </motion.div>
                     </div>
                 </div>
-            </div>
+            </div >
+
+            {/* Fixed Artist Credit - Bottom Left */}
+            < motion.div
+                initial={{ opacity: 0 }
+                }
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+                className="fixed bottom-6 left-6 z-50 flex items-center gap-2 pointer-events-none"
+            >
+                <div className="w-1 h-1 rounded-full bg-emerald-500/50" />
+                <p className="text-[10px] font-bold tracking-[0.2em] text-zinc-300 dark:text-zinc-700 uppercase">
+                    Developed by <span className="text-zinc-400 dark:text-zinc-600">OMRed</span>
+                </p>
+            </motion.div >
 
             <OnboardingModal
                 isOpen={showOnboarding}
@@ -372,6 +375,6 @@ export function DashboardLayout({
                 isOpen={showCSVImport}
                 onClose={() => setShowCSVImport(false)}
             />
-        </div>
+        </div >
     );
 }

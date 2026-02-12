@@ -18,7 +18,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Flowly AI | Fluid Finance Tracker",
+  title: "Flowly",
   description: "Experience fluid financial control with AI-powered insights and forecasting.",
   authors: [{ name: "OMRed" }],
   creator: "OMRed",
@@ -29,6 +29,8 @@ export const metadata: Metadata = {
 };
 
 import { PageTransitionWrapper } from "@/components/page-transition-wrapper";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -41,9 +43,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} antialiased`}
         suppressHydrationWarning
       >
-        <PageTransitionWrapper>
-          {children}
-        </PageTransitionWrapper>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+        >
+          <PageTransitionWrapper>
+            {children}
+          </PageTransitionWrapper>
+          <Toaster position="top-center" richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

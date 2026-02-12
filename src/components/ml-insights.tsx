@@ -96,13 +96,13 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
                                 )}
                             </div>
                         </div>
-                        <div className="absolute top-8 bottom-8 left-3 w-1 bg-indigo-500/30 rounded-full" />
+                        <div className="absolute top-8 bottom-8 left-3 w-1 bg-gradient-to-b from-indigo-500/80 via-indigo-500/30 to-transparent rounded-full" />
                     </div>
 
                     {/* Insights Section (Causality & Recovery) */}
                     {data.insights && data.insights.length > 0 && (
                         <div className="space-y-4 relative pl-3">
-                            <div className="absolute top-0 bottom-0 left-0 w-1 bg-emerald-500/30 rounded-full" />
+                            <div className="absolute top-0 bottom-0 left-0 w-1 bg-gradient-to-b from-emerald-500/80 via-emerald-500/30 to-transparent rounded-full" />
                             <div className="flex items-center gap-3 pl-1">
                                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                                 <p className="text-[10px] font-bold tracking-[0.2em] text-emerald-500 uppercase">Actionable Insights</p>

@@ -55,11 +55,12 @@ export function AuthHero() {
                 </motion.div>
             </AnimatePresence>
 
-            <div className="relative z-10">
+            {/* Logo - Pinned Top Left */}
+            <div className="absolute top-12 left-12 z-10">
                 <Logo className="w-10 h-10 opacity-90" />
             </div>
 
-            <div className="relative z-10 space-y-8 max-w-lg">
+            <div className="relative z-10 space-y-8 max-w-lg mb-12">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentShot}
@@ -83,6 +84,7 @@ export function AuthHero() {
                 </AnimatePresence>
             </div>
 
+            {/* Indicators */}
             <div className="relative z-10 flex flex-col gap-6">
                 <div className="flex gap-3">
                     {HERO_SHOTS.map((_, i) => (
@@ -93,12 +95,14 @@ export function AuthHero() {
                         />
                     ))}
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-1 h-1 rounded-full bg-emerald-500/50" />
-                    <p className="text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase">
-                        Developed by <span className="text-white/60">OMRed</span>
-                    </p>
-                </div>
+            </div>
+
+            {/* Credit - Pinned Bottom Right */}
+            <div className="absolute bottom-12 right-12 z-10 flex items-center gap-2">
+                <div className="w-1 h-1 rounded-full bg-emerald-500/50" />
+                <p className="text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase">
+                    Developed by <span className="text-white/60">OMRed</span>
+                </p>
             </div>
         </div>
     );
