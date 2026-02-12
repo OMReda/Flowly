@@ -244,7 +244,7 @@ export function DashboardLayout({
                                 >
                                     <div className="flex items-center justify-between mb-6 z-10 relative">
                                         <div className="flex items-center gap-4 pl-3">
-                                            {/* Line removed for cleaner UI */}
+                                            <div className="absolute top-0 bottom-0 left-0 w-1 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-r-full shadow-[0_0_12px_rgba(16,185,129,0.5)]" />
                                             <div>
                                                 <h3 className="text-lg font-serif tracking-tight font-semibold text-zinc-900 dark:text-zinc-50">Financial Trajectory</h3>
                                                 <p className="text-[10px] text-zinc-400 font-medium">Burn Rate & Projection</p>
