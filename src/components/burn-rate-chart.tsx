@@ -10,6 +10,32 @@ interface BurnRateChartProps {
     days?: number;
 }
 
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="bg-white/80 dark:bg-zinc-900/90 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl shadow-xl space-y-2">
+                <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{label}</p>
+                <div className="space-y-1">
+                    {payload.map((entry: any, index: number) => (
+                        <div key={index} className="flex items-center justify-between gap-8">
+                            <div className="flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                                <span className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
+                                    {entry.name === 'amount' ? 'Daily' : 'Accumulated'}
+                                </span>
+                            </div>
+                            <span className="text-sm font-serif font-bold text-zinc-900 dark:text-zinc-50 tabular-nums">
+                                ${entry.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+    return null;
+};
+
 export function BurnRateChart({ transactions = [], budget = 1000, days = 30 }: BurnRateChartProps) {
     const dailyData = getDailySpending(transactions, days);
 
@@ -123,33 +149,29 @@ export function BurnRateChart({ transactions = [], budget = 1000, days = 30 }: B
                         bottom: 0,
                     }}
                 >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E4E4E7" opacity={0.5} />
+                    <defs>
+                        <linearGradient id="colorDaily" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                        </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" opacity={0.1} />
                     <XAxis
                         dataKey="date"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 10, fill: '#71717A' }}
+                        tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.4 }}
                         tickFormatter={(val) => val.slice(8)} // Show DD only
                     />
                     <YAxis
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 10, fill: '#71717A' }}
+                        tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.4 }}
                         tickFormatter={(val) => `$${val}`}
                     />
                     <Tooltip
-                        contentStyle={{
-                            borderRadius: '12px',
-                            border: '1px solid #F4F4F5',
-                            boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
-                            fontSize: '11px',
-                            fontFamily: 'inherit'
-                        }}
-                        labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
-                        formatter={(value: number | undefined, name: string | undefined) => [
-                            `$${(value || 0).toFixed(2)}`,
-                            name === 'amount' ? 'Daily Spending' : 'Accumulated Spending'
-                        ]}
+                        content={<CustomTooltip />}
+                        cursor={{ stroke: '#10B981', strokeWidth: 1, strokeDasharray: '4 4' }}
                     />
                     <Legend
                         verticalAlign="top"
@@ -157,7 +179,7 @@ export function BurnRateChart({ transactions = [], budget = 1000, days = 30 }: B
                         height={36}
                         iconType="circle"
                         formatter={(value) => (
-                            <span className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase">
+                            <span className="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase">
                                 {value === 'amount' ? 'Daily' : 'Accumulated'}
                             </span>
                         )}
@@ -166,8 +188,8 @@ export function BurnRateChart({ transactions = [], budget = 1000, days = 30 }: B
                         type="monotone"
                         dataKey="amount"
                         stroke="#10B981"
-                        fill="#10B981"
-                        fillOpacity={0.1}
+                        fill="url(#colorDaily)"
+                        fillOpacity={1}
                         strokeWidth={2}
                         name="amount"
                         animationDuration={1500}
