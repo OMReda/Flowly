@@ -15,6 +15,8 @@ import {
   generateForecast,
   generateInsights
 } from "@/lib/deterministic-logic";
+import { calculateVitality } from "@/lib/vitality-engine";
+import { safeDivide, clamp } from "@/lib/math-utils";
 
 export default async function Home() {
   const session = await auth();
@@ -72,11 +74,13 @@ export default async function Home() {
     }
 
     // 4. User Profile
-    const profile = db.query.profiles.findFirst({
-      where: eq(profiles.id, userId)
-    }) as unknown as UserProfile | undefined;
+    const profileResult = db.select().from(profiles).where(eq(profiles.id, userId)).get() as UserProfile | undefined;
 
-    userProfile = profile || null;
+    userProfile = profileResult || {
+      id: userId,
+      onboarding_completed: false,
+      monthly_budget: 1000,
+    } as UserProfile;
 
   } catch (error) {
     console.error("Dashboard Data Fetch Error:", error);
@@ -123,10 +127,13 @@ export default async function Home() {
 
   const prevNetForMonth = prevMonthIncome - prevMonthSpent;
 
-  // Deltas
-  const calculateDelta = (currentValue: number, previousValue: number) => {
-    if (previousValue === 0) return currentValue === 0 ? 0 : (currentValue > 0 ? 100 : -100);
-    return ((currentValue - previousValue) / Math.abs(previousValue)) * 100;
+  // Stable Deltas: Prevents unrealistic % spikes when base is small
+  const calculateDelta = (current: number, previous: number) => {
+    const threshold = 50;
+    if (Math.abs(previous) < threshold) {
+      return current - previous; // Return absolute change for small bases
+    }
+    return safeDivide(current - previous, Math.abs(previous), 0) * 100;
   };
 
   const spendingDelta = calculateDelta(currentMonthSpent, prevMonthSpent);
@@ -157,14 +164,32 @@ export default async function Home() {
     }
   });
 
-  const categoryData = Object.entries(categoryMap)
+  let categoryData: { name: string; value: number; count: number; color: string; percentage?: number }[] = Object.entries(categoryMap)
     .filter(([_, data]) => data.value > 0)
     .map(([name, data]) => ({ name, value: data.value, count: data.count, color: '#10B981' }))
-    .sort((a, b) => b.value - a.value)
-    .map((item, index) => {
-      const colors = ['#10B981', '#3B82F6', '#F59E0B', '#F43F5E', '#8B5CF6', '#71717A'];
-      return { ...item, color: colors[index % colors.length] };
+    .sort((a, b) => b.value - a.value);
+
+  // Allocation Rounding Fix: Ensure percentages sum to exactly 100%
+  const totalCategoryValue = categoryData.reduce((acc, cat) => acc + cat.value, 0);
+  if (totalCategoryValue > 0) {
+    let percentageSum = 0;
+    categoryData = categoryData.map(cat => {
+      const pct = Math.round((cat.value / totalCategoryValue) * 100);
+      percentageSum += pct;
+      return { ...cat, percentage: pct };
     });
+
+    // Remainder redistribution to the largest category
+    const remainder = 100 - percentageSum;
+    if (remainder !== 0 && categoryData.length > 0) {
+      categoryData[0].percentage = (categoryData[0].percentage || 0) + remainder;
+    }
+  }
+
+  categoryData = categoryData.map((item, index) => {
+    const colors = ['#10B981', '#3B82F6', '#F59E0B', '#F43F5E', '#8B5CF6', '#71717A'];
+    return { ...item, color: colors[index % colors.length] };
+  });
 
   // Category Data (Income)
   const incomeCategoryMap: Record<string, { value: number; count: number }> = {};
@@ -182,17 +207,38 @@ export default async function Home() {
     }
   });
 
-  const incomeCategoryData = Object.entries(incomeCategoryMap)
+  let incomeCategoryData: { name: string; value: number; count: number; color: string; percentage?: number }[] = Object.entries(incomeCategoryMap)
     .filter(([_, data]) => data.value > 0)
     .map(([name, data]) => ({ name, value: data.value, count: data.count, color: '#10B981' }))
-    .sort((a, b) => b.value - a.value)
-    .map((item, index) => {
-      const colors = ['#8B5CF6', '#EC4899', '#6366F1', '#14B8A6', '#F59E0B', '#71717A']; // Different palette for income
-      return { ...item, color: colors[index % colors.length] };
+    .sort((a, b) => b.value - a.value);
+
+  // Income Rounding Fix
+  const totalIncomeValue = incomeCategoryData.reduce((acc, cat) => acc + cat.value, 0);
+  if (totalIncomeValue > 0) {
+    let incomePercentageSum = 0;
+    incomeCategoryData = incomeCategoryData.map(cat => {
+      const pct = Math.round((cat.value / totalIncomeValue) * 100);
+      incomePercentageSum += pct;
+      return { ...cat, percentage: pct };
     });
 
+    const incomeRemainder = 100 - incomePercentageSum;
+    if (incomeRemainder !== 0 && incomeCategoryData.length > 0) {
+      incomeCategoryData[0].percentage = (incomeCategoryData[0].percentage || 0) + incomeRemainder;
+    }
+  }
+
+  incomeCategoryData = incomeCategoryData.map((item, index) => {
+    const colors = ['#8B5CF6', '#EC4899', '#6366F1', '#14B8A6', '#F59E0B', '#71717A'];
+    return { ...item, color: colors[index % colors.length] };
+  });
+
   const insightsList = generateInsights(expenses, budget, currentMonthSpent, expenses.length);
-  const { score, reasoning: scoreReasoning } = calculateFlowlyScore(currentMonthSpent, budget, anomalies, expenses.length);
+  const { score: rawScore, reasoning: scoreReasoning } = calculateFlowlyScore(currentMonthSpent, currentMonthIncome, budget, anomalies, expenses.length);
+
+  // Learning Mode Blending: Smooth transitions during cold start
+  const confidenceWeight = clamp(expenses.length / 20, 0, 1);
+  const finalScore = Math.round(rawScore * confidenceWeight + 50 * (1 - confidenceWeight));
 
   const insightsData = {
     generated_at: new Date().toISOString(),
@@ -201,12 +247,23 @@ export default async function Home() {
     forecast_reasoning: forecast.reasoning,
     confidence: forecast.confidence,
     anomalies,
-    flowly_score: score,
+    flowly_score: finalScore,
     score_reasoning: scoreReasoning,
     data_points: expenses.length,
     insights: insightsList,
     is_low_data: expenses.length < 5
   };
+
+  const vitalityData = calculateVitality(
+    currentNetForMonth,
+    prevNetForMonth,
+    currentMonthIncome,
+    prevMonthIncome, // Safe acceleration baseline
+    currentMonthSpent,
+    userProfile,
+    analysisTransactions,
+    currentMonthExpenses
+  );
 
   const isAiEnabled = userProfile?.ai_enabled !== false;
   const hasAiKey = isAiEnabled && !!(userProfile?.gemini_api_key || (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.length > 20 && process.env.GEMINI_API_KEY !== "your-gemini-api-key"));
@@ -223,6 +280,7 @@ export default async function Home() {
       hasAiKey={hasAiKey}
       userProfile={userProfile}
       insights={insightsData}
+      vitality={vitalityData}
       deltas={deltas}
       categoryData={categoryData}
       incomeCategoryData={incomeCategoryData}

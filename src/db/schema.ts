@@ -5,8 +5,12 @@ export const profiles = sqliteTable("profiles", {
     id: text("id").primaryKey(), // Simple single user for now or linking to auth
     currency_pref: text("currency_pref").default("USD"),
     monthly_budget: integer("monthly_budget").default(1000),
-    monthly_income: integer("monthly_income"),
-    fixed_expenses: integer("fixed_expenses"),
+    monthly_income: real("monthly_income").default(0),
+    fixed_expenses: real("fixed_expenses").default(0),
+    savings_target: real("savings_target").default(0),
+    current_savings: real("current_savings").default(0),
+    debt_balance: real("debt_balance").default(0),
+    overdraft_count: integer("overdraft_count").default(0),
     financial_goal: text("financial_goal"), // 'save' | 'control' | 'recover'
     personality: text("personality"), // 'frugal' | 'impulsive' | 'balanced'
     starting_balance: integer("starting_balance").default(0),

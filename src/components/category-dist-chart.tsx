@@ -27,51 +27,36 @@ export function CategoryDistChart({ data }: { data: CategoryData[] }) {
     if (chartData.length === 0) {
         return (
             <motion.div
-                whileHover={{ y: -8, scale: 1.01 }}
-                transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-                className="h-full w-full flex flex-col items-center justify-center min-h-[220px] relative bg-zinc-50/20 dark:bg-zinc-900/10 rounded-[32px] border border-zinc-100/50 dark:border-zinc-800/30 overflow-hidden group"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="h-full w-full flex flex-col items-center justify-center min-h-[220px] relative bg-zinc-50/10 dark:bg-zinc-900/5 rounded-[32px] border border-zinc-100 dark:border-zinc-800/50 group overflow-hidden"
             >
-                {/* Background Sweep Effect */}
+                {/* Subtle Professional Backdrop */}
                 <div className="absolute inset-0 pointer-events-none">
-                    <motion.div
-                        animate={{
-                            rotate: [0, 360],
-                        }}
-                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-gradient-to-tr from-zinc-200/20 via-transparent to-transparent dark:from-zinc-800/20 rounded-full blur-3xl opacity-30"
-                    />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-br from-zinc-200/10 via-transparent to-transparent dark:from-zinc-100/5 blur-[100px] opacity-40" />
                 </div>
 
-                {/* The "Ghost Donut" Ring */}
-                <div className="relative w-28 h-28 mb-6">
+                {/* Simplified Professional Ring */}
+                <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
+                    <motion.div
+                        className="absolute inset-0 rounded-full border-[6px] border-zinc-100 dark:border-zinc-800/50"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    />
                     <motion.div
                         animate={{
-                            rotate: [0, 360],
-                            opacity: [0.2, 0.4, 0.2]
+                            opacity: [0.3, 0.8, 0.3],
+                            scale: [1, 1.1, 1]
                         }}
-                        transition={{
-                            duration: 10,
-                            repeat: Infinity,
-                            ease: "linear"
-                        }}
-                        className="absolute inset-0 rounded-full border-[8px] border-dashed border-zinc-200/40 dark:border-zinc-800/40 transition-colors duration-700 group-hover:border-emerald-500/30"
-                    />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <motion.div
-                            animate={{ opacity: [0.4, 1, 0.4], scale: [0.95, 1, 0.95] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                        >
-                            <PieChartIcon className="w-6 h-6 text-zinc-300 dark:text-zinc-600" />
-                        </motion.div>
-                    </div>
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                        <PieChartIcon className="w-6 h-6 text-emerald-500/50 dark:text-emerald-500/40" />
+                    </motion.div>
                 </div>
 
-                <div className="text-center space-y-2 relative z-10">
-                    <p className="text-base font-serif text-zinc-600 dark:text-zinc-300 italic">No allocation detected</p>
-                    <div className="flex flex-col items-center gap-2">
-                        <span className="h-px w-8 bg-zinc-200 dark:bg-zinc-800" />
-                        <p className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.4em]">Structure awaits input</p>
-                    </div>
+                <div className="text-center space-y-1 relative z-10">
+                    <p className="text-sm font-serif text-zinc-400 dark:text-zinc-500 italic">No allocation detected</p>
+                    <p className="text-[8px] font-bold text-zinc-300 dark:text-zinc-600 uppercase tracking-[0.5em]">Structure Ready</p>
                 </div>
             </motion.div>
         );

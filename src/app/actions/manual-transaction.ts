@@ -1,4 +1,5 @@
 "use server";
+console.log("[MODULE] manual-transaction.ts loaded");
 
 import { db } from "@/db";
 import { transactions, audit_logs } from "@/db/schema";
@@ -55,10 +56,11 @@ export async function addManualTransaction(formData: FormData) {
             is_subscription: validated.data.is_subscription,
         };
 
-        console.log("[ACTION] addManualTransaction inserting transaction...");
+        console.log("[ACTION] addManualTransaction: Inserting transaction into DB...");
         db.insert(transactions).values(transactionValue).run();
 
         // Audit Log
+        console.log("[ACTION] addManualTransaction: Writing audit log...");
         db.insert(audit_logs).values({
             id: uuidv4(),
             user_id: session.user.id,
@@ -68,7 +70,10 @@ export async function addManualTransaction(formData: FormData) {
             new_data: JSON.stringify(transactionValue),
         }).run();
 
+        console.log("[ACTION] addManualTransaction: Revalidating path...");
         revalidatePath("/");
+
+        console.log("[ACTION] addManualTransaction: Success!");
         return { success: true, id: newId, type: validated.data.type };
     } catch (error) {
         console.error("[ACTION] addManualTransaction Fatal Error:", error);

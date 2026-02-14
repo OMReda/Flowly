@@ -54,17 +54,10 @@ export async function register(prevState: unknown, formData: FormData) {
 
     const { email, password, name } = validatedFields.data;
 
-    // Check if user exists
-    const existingUser = db
-        .select()
-        .from(users)
-        .where(eq(users.email, email))
-        .get();
-
+    // Check if user exists (Double check before insert)
+    const existingUser = db.select().from(users).where(eq(users.email, email)).get();
     if (existingUser) {
-        return {
-            error: "Email already in use",
-        };
+        return { error: "Email already in use. Please sign in or use a different email." };
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -84,12 +77,13 @@ export async function register(prevState: unknown, formData: FormData) {
             monthly_budget: 1000,
             onboarding_completed: false,
         }).run();
-
-    } catch (err) {
-        console.error(err);
-        return {
-            error: "Failed to create user",
-        };
+    } catch (err: any) {
+        // Handle race condition or unexpected database errors
+        if (err.message?.includes('UNIQUE constraint failed')) {
+            return { error: "Email already in use. Please sign in." };
+        }
+        console.error("[AUTH] Registration Error:", err);
+        return { error: "Failed to create account. Please try again later." };
     }
 
     // Return success to component to trigger client-side redirect or signIn

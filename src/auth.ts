@@ -22,6 +22,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     providers: [
         Credentials({
             async authorize(credentials) {
+                console.log(`[AUTH] Authorize session attempt for ${credentials?.email}`);
                 const parsedCredentials = z
                     .object({ email: z.string().email(), password: z.string().min(6) })
                     .safeParse(credentials);
@@ -29,15 +30,35 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
                 if (parsedCredentials.success) {
                     const { email, password } = parsedCredentials.data;
                     const user = await getUser(email);
-                    if (!user) return null;
+                    if (!user) {
+                        console.warn(`[AUTH] User not found: ${email}`);
+                        return null;
+                    }
+
                     const passwordsMatch = await bcrypt.compare(password, user.password_hash);
 
-                    if (passwordsMatch) return user;
+                    if (passwordsMatch) {
+                        console.log(`[AUTH] Success login for ${email}`);
+                        return user;
+                    }
+                    console.warn(`[AUTH] Password mismatch for ${email}`);
                 }
 
-                console.log("Invalid credentials");
+                console.warn(`[AUTH] Invalid credentials format or failed verification`);
                 return null;
             },
         }),
     ],
+    callbacks: {
+        async session({ session, token }) {
+            console.log(`[AUTH] Session callback: token.sub = ${token?.sub}`);
+            if (token.sub && session.user) {
+                session.user.id = token.sub;
+            }
+            return session;
+        },
+        async jwt({ token }) {
+            return token;
+        },
+    },
 });

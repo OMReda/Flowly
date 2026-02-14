@@ -31,7 +31,12 @@ export async function updateTransactionCategory(id: string, newCategory: string)
 
         db.update(transactions)
             .set({ category: newCategory })
-            .where(eq(transactions.id, id))
+            .where(
+                and(
+                    eq(transactions.id, id),
+                    eq(transactions.user_id, session.user.id)
+                )
+            )
             .run();
 
         // Audit Log

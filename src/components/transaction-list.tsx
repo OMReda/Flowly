@@ -145,7 +145,7 @@ export function TransactionList({ transactions, showDelete = false, showCategori
                     <button onClick={() => setSearchQuery("")} className="mt-4 text-[9px] font-bold text-emerald-600 uppercase tracking-widest hover:underline">Clear search</button>
                 </div>
             )}
-            <div className="space-y-2">
+            <div className="space-y-0">
                 <AnimatePresence mode="popLayout">
                     {activeTransactions.slice(0, 50).map((t: Transaction, i) => (
                         <motion.div
@@ -154,71 +154,85 @@ export function TransactionList({ transactions, showDelete = false, showCategori
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20, transition: { duration: 0.2 } }}
-                            whileHover={{ y: -2, x: 4, scale: 1.002 }}
+                            whileHover={{ x: 1 }}
                             transition={{
                                 type: "spring",
-                                stiffness: 500,
+                                stiffness: 400,
                                 damping: 30,
-                                opacity: { duration: 0.2 }
+                                opacity: { duration: 0.15 }
                             }}
+                            className="border-b border-zinc-100 dark:border-zinc-800/40 last:border-0"
                         >
-                            <div className="group relative p-4 flex items-center justify-between transition-[transform,opacity] duration-300 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 rounded-xl cursor-default border border-transparent hover:border-zinc-100 dark:hover:border-zinc-800">
-                                <div className="flex items-center gap-5">
-                                    <div
-                                        className={`w-11 h-11 rounded-full flex items-center justify-center text-[10px] font-bold tracking-tighter text-white
-                                        ${t.type === 'income' ? 'bg-emerald-500/90' : 'bg-zinc-800 dark:bg-zinc-700'}
-                                    `}
-                                    >
-                                        {t.category ? t.category.substring(0, 2).toUpperCase() : '??'}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-serif tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
-                                            {t.merchant}
-                                        </h3>
-                                        <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.15em] mt-0.5 flex items-center gap-2">
-                                            {t.is_subscription && <Repeat className="w-2.5 h-2.5 text-blue-400" />}
-                                            {t.category} <span className="text-zinc-200 dark:text-zinc-800">•</span> {isMounted ? new Date(t.date || "").toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : "--"}
-                                        </p>
-                                        {t.ai_confidence === 'low' && (
-                                            <div className="mt-1.5 relative group/category">
-                                                <button className="text-[9px] flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-500 border border-amber-200 dark:border-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-950/30 transition-colors">
-                                                    <AlertCircle className="w-2.5 h-2.5" />
-                                                    Not {t.category}?
-                                                </button>
-                                                <div className="absolute top-full left-0 mt-1 hidden group-hover/category:block z-10">
-                                                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg p-1 min-w-[120px]">
-                                                        {COMMON_CATEGORIES.filter(c => c.toLowerCase() !== t.category?.toLowerCase()).map(cat => (
-                                                            <button
-                                                                key={cat}
-                                                                onClick={() => handleCategoryChange(t.id, cat)}
-                                                                disabled={changingCategory === t.id}
-                                                                className="w-full text-left text-xs px-3 py-1.5 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded transition-colors text-zinc-700 dark:text-zinc-300"
-                                                            >
-                                                                {cat}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
+                            <div
+                                className="group relative py-3.5 px-4 grid items-center transition-colors duration-150 hover:bg-zinc-50/60 dark:hover:bg-zinc-900/20"
+                                style={{ gridTemplateColumns: 'auto 1fr max-content' }}
+                            >
+                                {/* Column 1: Avatar */}
+                                <div
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center text-[9px] font-bold tracking-tight text-white shrink-0 mr-3.5 ring-1 ring-black/5 dark:ring-white/5
+                                    ${t.type === 'income' ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-zinc-700 dark:bg-zinc-800'}
+                                `}
+                                >
+                                    {t.category ? t.category.substring(0, 2).toUpperCase() : '??'}
                                 </div>
 
-                                <div className="flex items-center gap-2">
-                                    <div className="text-right transition-all duration-300">
-                                        <p className={`text-lg font-serif ${t.type === 'income' ? 'text-emerald-600' : 'text-rose-500'}`}>
-                                            {t.type === 'expense' ? '-' : '+'}${Number(t.amount).toFixed(2)}
+                                {/* Column 2: Merchant Info */}
+                                <div className="min-w-0 pr-12">
+                                    <h3 className="text-[15px] font-medium text-zinc-900 dark:text-zinc-100 leading-tight truncate">
+                                        {t.merchant}
+                                    </h3>
+                                    <p className="text-[13px] font-normal text-zinc-500 dark:text-zinc-400 mt-0.5 flex items-center gap-1.5">
+                                        {t.is_subscription && <Repeat className="w-3 h-3 text-blue-500 dark:text-blue-400" />}
+                                        <span className="capitalize">{t.category}</span>
+                                        <span className="text-zinc-300 dark:text-zinc-600">·</span>
+                                        <span className="tabular-nums">{isMounted ? new Date(t.date || "").toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : "--"}</span>
+                                    </p>
+                                    {t.ai_confidence === 'low' && (
+                                        <div className="mt-1.5 relative group/category">
+                                            <button className="text-[10px] font-medium flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200/50 dark:border-amber-900/40 hover:bg-amber-100 dark:hover:bg-amber-950/40 transition-colors">
+                                                <AlertCircle className="w-2.5 h-2.5" />
+                                                Wrong category?
+                                            </button>
+                                            <div className="absolute top-full left-0 mt-1.5 hidden group-hover/category:block z-10">
+                                                <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg overflow-hidden">
+                                                    {COMMON_CATEGORIES.filter(c => c.toLowerCase() !== t.category?.toLowerCase()).map(cat => (
+                                                        <button
+                                                            key={cat}
+                                                            onClick={() => handleCategoryChange(t.id, cat)}
+                                                            disabled={changingCategory === t.id}
+                                                            className="w-full text-left text-[13px] font-medium px-3 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors text-zinc-700 dark:text-zinc-300 first:pt-2 last:pb-2"
+                                                        >
+                                                            {cat}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Column 3: Amount + Delete */}
+                                <div className="flex items-center gap-3 justify-end">
+                                    <div
+                                        className="text-right whitespace-nowrap"
+                                        style={{
+                                            fontVariantNumeric: 'tabular-nums',
+                                            minWidth: 'max-content'
+                                        }}
+                                    >
+                                        <p className={`text-[15px] font-semibold tracking-tight ${t.type === 'income' ? 'text-emerald-600 dark:text-emerald-500' : 'text-rose-600 dark:text-rose-400'}`}>
+                                            {t.type === 'expense' ? '−' : '+'}${Number(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </p>
                                     </div>
 
                                     {showDelete && (
-                                        <div className="overflow-hidden flex justify-end">
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                                             <button
                                                 onClick={() => handleDelete(t.id)}
                                                 disabled={deletingId === t.id}
-                                                className={`p-2.5 rounded-full transition-all shadow-sm border ${confirmDelete === t.id
-                                                    ? 'bg-rose-500 text-white border-rose-500 scale-110'
-                                                    : 'bg-white dark:bg-zinc-800 text-zinc-400 hover:text-rose-500 border-zinc-100 dark:border-zinc-700 hover:border-rose-100'
+                                                className={`p-2 rounded-lg transition-all ${confirmDelete === t.id
+                                                    ? 'bg-red-500 text-white scale-105'
+                                                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20'
                                                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                                             >
                                                 {deletingId === t.id ? (
@@ -241,8 +255,14 @@ export function TransactionList({ transactions, showDelete = false, showCategori
             <div className="mt-12 flex items-center justify-center h-10 border-t border-zinc-50 dark:border-zinc-900">
                 <div className="flex items-center gap-6">
                     <motion.button
-                        whileHover={{ y: -1, scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileHover={{ y: -3, scale: 1.02 }}
+                        whileTap={{ scale: 0.97 }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 15,
+                            mass: 0.8
+                        }}
                         onClick={() => exportData('csv')}
                         className="group flex items-center gap-2 h-6 px-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
                     >
@@ -251,8 +271,14 @@ export function TransactionList({ transactions, showDelete = false, showCategori
                     </motion.button>
 
                     <motion.button
-                        whileHover={{ y: -1, scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileHover={{ y: -3, scale: 1.02 }}
+                        whileTap={{ scale: 0.97 }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 15,
+                            mass: 0.8
+                        }}
                         onClick={() => exportData('json')}
                         className="group flex items-center gap-2 h-6 px-2 rounded-md hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all"
                     >

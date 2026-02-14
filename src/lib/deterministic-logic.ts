@@ -1,4 +1,5 @@
 import { Transaction } from "./types";
+import { safeDivide, clamp, average, standardDeviation, coefficientOfVariation } from "./math-utils";
 
 export interface Insight {
     type: 'warning' | 'suggestion' | 'pacing';
@@ -32,39 +33,52 @@ export interface DeterministicInsights {
 
 export function calculateFlowlyScore(
     totalSpent: number,
+    totalIncome: number,
     budget: number,
     anomalies: Anomaly[],
     transactionCount: number
 ): { score: number; reasoning: string } {
-    // 1. Budget Adherence (50pts)
+    // 1. Budget Adherence (40pts)
     let b_score = 0;
     if (totalSpent <= budget) {
-        b_score = 50;
+        b_score = 40;
     } else {
-        const overspendRatio = budget > 0 ? (totalSpent - budget) / budget : 1;
-        b_score = Math.max(0, 50 - (overspendRatio * 50 * 2));
+        // Exponential decay for overspend: prevents instant collapse but penalizes more as ratio grows
+        const overspendRatio = safeDivide(totalSpent - budget, budget, 0);
+        b_score = 40 * Math.exp(-3 * overspendRatio);
     }
 
-    // 2. Anomaly Penalty (25pts)
-    const a_score = Math.max(0, 25 - (anomalies.length * 5));
+    // 2. Savings Rate / Efficiency (20pts)
+    // Goal: Inflow > Outflow. Ideal = 20%
+    let e_score = 0;
+    const savingsRate = safeDivide(totalIncome - totalSpent, totalIncome, 0);
+    const efficiencyScore = (savingsRate / 0.20) * 20;
+    e_score = clamp(efficiencyScore, 0, 20);
 
-    // 3. Consistency (25pts)
-    const c_score = Math.min(25, (transactionCount / 30) * 25);
+    // 3. Anomaly Penalty (20pts)
+    const a_score = Math.max(0, 20 - (anomalies.length * 4));
 
-    const score = Math.round(b_score + a_score + c_score);
+    // 4. Consistency (20pts) - Logarithmic scaling
+    // Rewards growth progressively; avoids linear 20+ rule
+    const consistencyScore = 20 * (Math.log(transactionCount + 1) / Math.log(30));
+    const c_score = clamp(consistencyScore, 0, 20);
+
+    const score = Math.round(b_score + e_score + a_score + c_score);
 
     // Supportive Reasoning
     let reasoning = "Analyzing your spending habits...";
     if (transactionCount < 5) {
         reasoning = "Score is in 'Learning Mode' while we observe your initial habits.";
     } else if (score > 85) {
-        reasoning = "Excellent! High score due to disciplined budget adherence and consistent tracking.";
+        reasoning = "Excellent! High score due to disciplined budget adherence and positive savings rate.";
     } else if (score > 70) {
-        reasoning = "Good progress. Score is stable with low impulse spending detected.";
+        reasoning = "Good progress. Your financial engine is stable with healthy habits.";
     } else if (totalSpent > budget) {
-        reasoning = "Score impacted by budget overflow. Try to align spending with your monthly goals.";
+        reasoning = "Score impacted by budget overflow. Aligning spending with goals will help.";
+    } else if (totalSpent > totalIncome && totalIncome > 0) {
+        reasoning = "Outflow exceeds inflow this month. Focus on reducing variable expenses.";
     } else if (anomalies.length > 0) {
-        reasoning = "Some unusual spikes detected. Identifying these can help stabilize your score.";
+        reasoning = "Spikes detected. High one-time costs are impacting your efficiency score.";
     }
 
     return { score, reasoning };
@@ -92,22 +106,26 @@ export function detectMerchantCategory(merchant: string): string | null {
 }
 
 export function detectAnomalies(transactions: Transaction[]): Anomaly[] {
-    if (!transactions || transactions.length < 5) return [];
-
     const validExpenses = transactions.filter(t => t.type === 'expense' && t.amount != null);
+
+    // Stabilization: Neutral until enough data is collected
     if (validExpenses.length < 5) return [];
 
     const amounts = validExpenses.map(t => Number(t.amount) || 0);
-    const avg = amounts.reduce((a, b) => a + b, 0) / amounts.length;
+    const mean = average(amounts);
+    const std = standardDeviation(amounts);
+
+    // Spike threshold: Mean + 2*StdDev
+    const threshold = mean + 2 * std;
 
     return validExpenses
-        .filter(t => (Number(t.amount) || 0) > avg * 3)
+        .filter(t => (Number(t.amount) || 0) > threshold && (Number(t.amount) || 0) > 10) // Min $10 to avoid noise
         .map(t => ({
             merchant: t.merchant || "Unknown Entity",
             amount: Number(t.amount) || 0,
             date: t.date || new Date().toISOString().split('T')[0],
             description: t.description || "N/A",
-            reason: (Number(t.amount) || 0) > avg * 5 ? "One-time large purchase" : "Significant spike vs average"
+            reason: (Number(t.amount) || 0) > mean + 5 * std ? "One-time large purchase" : "Significant spike vs average"
         }));
 }
 
@@ -134,36 +152,29 @@ export function generateForecast(transactions: Transaction[]): { total: number |
 
         const totalSpent = expenses.reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
         const dailyAvg = totalSpent / daysDiff;
-        const projected = dailyAvg * 30;
+        let projected = dailyAvg * 30;
 
-        // Confidence Logic
+        // Confidence & Volatility Logic
         let confidence: 'low' | 'medium' | 'high' = 'low';
 
         // Base confidence on data points
         if (count >= 45) confidence = 'high';
         else if (count >= 15) confidence = 'medium';
 
-        // Downgrade if recent spikes (Variance check)
-        const recentExpenses = expenses.filter(t => {
-            if (!t.date) return false;
-            const d = new Date(t.date);
-            const weekAgo = new Date();
-            weekAgo.setDate(weekAgo.getDate() - 7);
-            return !isNaN(d.getTime()) && d >= weekAgo;
-        });
+        // Volatility Dampening using Coefficient of Variation
+        const recentWindow = Math.min(count, 7);
+        const recentExpenses = expenses.slice(0, recentWindow).map(t => Number(t.amount) || 0);
+        const cv = coefficientOfVariation(recentExpenses);
 
-        const recentAvg = recentExpenses.length > 0
-            ? recentExpenses.reduce((acc, t) => acc + (Number(t.amount) || 0), 0) / recentExpenses.length
-            : 0;
-
-        // If recent average deviates significantly (> 50%) from long-term, reduce confidence
-        if (confidence !== 'low' && Math.abs(recentAvg - dailyAvg) > dailyAvg * 0.5) {
-            confidence = confidence === 'high' ? 'medium' : 'low';
+        if (cv > 0.5) {
+            projected *= 0.85; // Dampen projection due to high noise
+            if (confidence === 'high') confidence = 'medium';
+            else confidence = 'low';
         }
 
         return {
             total: Math.round((projected || 0) * 100) / 100,
-            reasoning: `Projected based on your 30-day average of $${dailyAvg.toFixed(2)}/day.`,
+            reasoning: `Projected monthly total based on your ${daysDiff}-day average of $${dailyAvg.toFixed(2)}/day${cv > 0.5 ? ' (with volatility dampening)' : ''}.`,
             confidence
         };
     } catch (e) {
@@ -249,17 +260,21 @@ export function generateInsights(
 export function getScoreExplanation(): string {
     return `Flowly Score Calculation:
 
-1. Budget Adherence (50 points)
+1. Budget Adherence (40 points)
    • Full points if spending ≤ budget
    • Scaled penalty for overspending
 
-2. Anomaly Control (25 points)
-   • -5 points per unusual spending spike
-   • Helps identify impulse purchases
+2. Efficiency / Savings (20 points)
+   • Bonus for keeping Outflow < Inflow
+   • 20% savings rate is the "Gold Standard"
 
-3. Consistency Tracking (25 points)
+3. Anomaly Control (20 points)
+   • Penalty for unusual spending spikes
+   • Encourages predictable habits
+
+4. Consistency (20 points)
    • Based on transaction frequency
-   • Goal: 30+ transactions per month
+   • Ensures data captures full habit range
 
 Note: Score enters "Learning Mode" with <5 transactions.`;
 }

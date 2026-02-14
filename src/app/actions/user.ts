@@ -11,40 +11,60 @@ import { Transaction, UserProfile } from "@/lib/types";
 
 export async function updateProfile(formData: Partial<UserProfile>) {
     console.log("[ACTION] updateProfile start", JSON.stringify(formData));
-    try {
-        const session = await auth();
-        if (!session?.user?.id) {
-            console.warn("[ACTION] updateProfile failed: Not authenticated");
-            return { error: "Not authenticated" };
-        }
+    const session = await auth();
+    if (!session?.user?.id) {
+        throw new Error("Not authenticated");
+    }
 
-        console.log(`[ACTION] updateProfile for user: ${session.user.id}`);
-        const result = db.update(profiles)
-            .set({
-                ...formData,
-                onboarding_completed: formData.onboarding_completed ?? true,
-            })
-            .where(eq(profiles.id, session.user.id))
+    const userId = session.user.id;
+    const dataToUpdate = {
+        ...formData,
+        onboarding_completed: formData.onboarding_completed ?? true,
+    };
+
+    try {
+        console.log(`[ACTION] updateProfile for user: ${userId}`);
+        const updateResult = db.update(profiles)
+            .set(dataToUpdate)
+            .where(eq(profiles.id, userId))
             .run();
 
-        console.log(`[ACTION] updateProfile DB result: ${result.changes} rows updated`);
+        if (updateResult.changes === 0) {
+            console.log(`[ACTION] Profile missing for ${userId}, inserting new row`);
+            db.insert(profiles).values({
+                id: userId,
+                currency_pref: 'USD',
+                monthly_budget: 1000,
+                monthly_income: 0,
+                fixed_expenses: 0,
+                starting_balance: 0,
+                financial_goal: 'save',
+                personality: 'balanced',
+                ai_enabled: true,
+                ...dataToUpdate,
+            }).run();
+        }
 
-        // Audit Log
-        db.insert(audit_logs).values({
-            id: uuidv4(),
-            user_id: session.user.id,
-            entity_type: 'profile',
-            entity_id: session.user.id,
-            action: 'update',
-            new_data: JSON.stringify(formData),
-        }).run();
+        // Audit Log (Optional, don't let it crash the main action)
+        try {
+            db.insert(audit_logs).values({
+                id: uuidv4(),
+                user_id: userId,
+                entity_type: 'profile',
+                entity_id: userId,
+                action: 'update',
+                new_data: JSON.stringify(formData),
+            }).run();
+        } catch (auditErr) {
+            console.error("[ACTION] Audit Log Error (non-fatal):", auditErr);
+        }
 
         console.log("[ACTION] updateProfile success");
         revalidatePath("/");
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error("[ACTION] updateProfile Fatal Error:", error);
-        return { error: "Failed to update profile" };
+        throw new Error(error.message || "Failed to update profile");
     }
 }
 

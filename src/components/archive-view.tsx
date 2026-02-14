@@ -28,7 +28,7 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
     const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
-    const [sortOrder, setSortOrder] = useState<'date-desc' | 'date-asc' | 'amount-desc'>('date-desc');
+    const [sortOrder, setSortOrder] = useState<'date-desc' | 'date-asc' | 'amount-desc' | 'amount-asc'>('date-desc');
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isWiggling, setIsWiggling] = useState<'csv' | 'json' | null>(null);
@@ -50,6 +50,9 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
             .sort((a, b) => {
                 if (sortOrder === 'amount-desc') {
                     return Number(b.amount) - Number(a.amount);
+                }
+                if (sortOrder === 'amount-asc') {
+                    return Number(a.amount) - Number(b.amount);
                 }
                 const dateA = new Date(a.date || 0).getTime();
                 const dateB = new Date(b.date || 0).getTime();
@@ -149,10 +152,15 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
                             Dashboard
                         </Link>
                         <motion.button
-                            whileHover={{ y: -2, scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            animate={isWiggling === 'csv' ? { x: [-4, 4, -4, 4, 0] } : {}}
-                            transition={{ duration: 0.4 }}
+                            whileHover={{ y: -4, scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            animate={isWiggling === 'csv' ? { x: [0, -4, 4, -4, 4, -2, 2, 0] } : {}}
+                            transition={{
+                                type: "spring",
+                                stiffness: 500,
+                                damping: 15,
+                                mass: 0.5
+                            }}
                             onClick={downloadCSV}
                             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all shadow-sm group"
                         >
@@ -160,10 +168,15 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
                             <span>Export CSV</span>
                         </motion.button>
                         <motion.button
-                            whileHover={{ y: -2, scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            animate={isWiggling === 'json' ? { x: [-4, 4, -4, 4, 0] } : {}}
-                            transition={{ duration: 0.4 }}
+                            whileHover={{ y: -4, scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            animate={isWiggling === 'json' ? { x: [0, -4, 4, -4, 4, -2, 2, 0] } : {}}
+                            transition={{
+                                type: "spring",
+                                stiffness: 500,
+                                damping: 15,
+                                mass: 0.5
+                            }}
                             onClick={downloadJSON}
                             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all shadow-sm group"
                         >
@@ -252,32 +265,39 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
                                 className="absolute inset-y-1 bg-white dark:bg-zinc-800 rounded-lg shadow-sm"
                                 initial={false}
                                 animate={{
-                                    x: sortOrder === 'date-desc' ? '0%' : sortOrder === 'date-asc' ? '100%' : '200%',
+                                    x: sortOrder === 'date-desc' ? '0%' : sortOrder === 'date-asc' ? '100%' : sortOrder === 'amount-desc' ? '200%' : '300%',
                                     left: '4px',
-                                    width: 'calc(33.33% - 4px)'
+                                    width: 'calc(25% - 4px)'
                                 }}
                                 transition={{ type: "spring", bounce: 0.1, duration: 0.4 }}
                             />
                             <button
                                 onClick={() => setSortOrder('date-desc')}
-                                className={`relative px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 z-10 flex items-center gap-2 ${sortOrder === 'date-desc' ? 'text-zinc-900 dark:text-zinc-50' : 'text-zinc-400 hover:text-zinc-600'}`}
+                                className={`relative px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 z-10 flex items-center justify-center gap-2 min-w-[70px] ${sortOrder === 'date-desc' ? 'text-zinc-900 dark:text-zinc-50' : 'text-zinc-400 hover:text-zinc-600'}`}
                             >
                                 <History className="w-3 h-3" />
                                 <span className="hidden sm:inline">Recent</span>
                             </button>
                             <button
                                 onClick={() => setSortOrder('date-asc')}
-                                className={`relative px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 z-10 flex items-center gap-2 ${sortOrder === 'date-asc' ? 'text-zinc-900 dark:text-zinc-50' : 'text-zinc-400 hover:text-zinc-600'}`}
+                                className={`relative px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 z-10 flex items-center justify-center gap-2 min-w-[70px] ${sortOrder === 'date-asc' ? 'text-zinc-900 dark:text-zinc-50' : 'text-zinc-400 hover:text-zinc-600'}`}
                             >
                                 <Calendar className="w-3 h-3" />
                                 <span className="hidden sm:inline">Oldest</span>
                             </button>
                             <button
                                 onClick={() => setSortOrder('amount-desc')}
-                                className={`relative px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 z-10 flex items-center gap-2 ${sortOrder === 'amount-desc' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400 hover:text-zinc-600'}`}
+                                className={`relative px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 z-10 flex items-center justify-center gap-2 min-w-[70px] ${sortOrder === 'amount-desc' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400 hover:text-zinc-600'}`}
                             >
                                 <ArrowUpRight className="w-3 h-3" />
                                 <span className="hidden sm:inline">Largest</span>
+                            </button>
+                            <button
+                                onClick={() => setSortOrder('amount-asc')}
+                                className={`relative px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 z-10 flex items-center justify-center gap-2 min-w-[70px] ${sortOrder === 'amount-asc' ? 'text-rose-600 dark:text-rose-400' : 'text-zinc-400 hover:text-zinc-600'}`}
+                            >
+                                <ArrowDownLeft className="w-3 h-3" />
+                                <span className="hidden sm:inline">Smallest</span>
                             </button>
                         </div>
                     </div>
@@ -347,8 +367,15 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
                 </div>
             </div>
 
-            <footer className="pt-12 pb-12 text-center opacity-30 group hover:opacity-100 transition-opacity">
-                <p className="text-[9px] font-medium tracking-[0.3em] uppercase text-zinc-400 italic">
+            <footer className="pt-12 pb-24 text-center space-y-8">
+                <div className="max-w-md mx-auto p-6 rounded-3xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-800 opacity-60 hover:opacity-100 transition-opacity">
+                    <p className="text-[10px] font-bold tracking-[0.2em] text-zinc-400 uppercase mb-3">Project Status</p>
+                    <h4 className="text-lg font-serif mb-2 text-zinc-900 dark:text-zinc-50">Designed & Owned by OMRed</h4>
+                    <p className="text-xs text-zinc-500 leading-relaxed px-4">
+                        This application is currently available for acquisition. Contact the owner for project acquisition or professional inquiries.
+                    </p>
+                </div>
+                <p className="text-[9px] font-medium tracking-[0.3em] uppercase text-zinc-400 italic opacity-30">
                     End of Historical Ledger
                 </p>
             </footer>

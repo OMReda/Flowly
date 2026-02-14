@@ -32,6 +32,10 @@ export interface UserProfile {
     monthly_budget: number | null;
     monthly_income: number | null;
     fixed_expenses: number | null;
+    savings_target: number | null;
+    current_savings: number | null;
+    debt_balance: number | null;
+    overdraft_count: number | null;
     financial_goal: string | null;
     personality: string | null;
     starting_balance: number | null;

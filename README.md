@@ -1,96 +1,72 @@
-# Flowly AI
+# Flowly AI — Fluid Financial Infrastructure
 
-**Fluid Financial Control.**
+**High-Fidelity Financial Control, Deterministic Insights.**
 
-Flowly AI is a modern, privacy-focused financial dashboard developed by **OMRed**. It combines deterministic financial logic with AI-powered insights to help you track, analyze, and optimize your spending. It features robust transaction management, intelligent forecasting, and a premium "medical-grade" UI.
+Flowly AI is a premium, privacy-centric financial ecosystem designed for those who demand precision, aesthetics, and privacy. Developed by **OMRed**, it merges clinical design with advanced data isolation and AI-assisted financial modeling.
 
-![Flowly Dashboard](./public/dashboard-preview.png)
+> [!IMPORTANT]
+> **PROJECT STATUS: FOR SALE**
+> This project, including its intellectual property, source code, and design architecture, is currently available for acquisition. For professional inquiries or to discuss a project acquisition, please contact **OMRed**.
 
-## Key Features
+---
 
-- **📊 Financial Dashboard**: Real-time view of your Burn Rate, Spending Mix, and Net Balance.
-- **🧠 AI Insights**: Google Gemini-powered analysis of your spending habits, providing actionable advice and detecting anomalies.
-- **🔮 Smart Forecasting**: Deterministic projection of your next month's expenses based on daily average spend, with confidence gating for low data.
-- **🧾 Receipt Processing**: Upload receipts or paste text to automatically extract transaction details using AI.
-- **🛡️ Privacy First**: Your data stays local (SQLite) or on your controlled infrastructure. AI processing is stateless.
-- **💎 Premium UI**: Built with a focus on aesthetics, using smooth animations (Framer Motion) and clean data visualization (Recharts).
+## 💎 Design Philosophy
+Flowly is built on the principle of **"Medical-Grade" UI**—minimalist, high-contrast, and focused on data density without clutter. Every interaction is fueled by **Framer Motion** spring physics to ensure the interface feels tactile and alive.
 
-## Tech Stack
+## 🧠 Core Intelligence
+- **Deterministic Forecasting**: Unlike standard apps, Flowly uses weighted temporal averages to project future spend with high mathematical confidence.
+- **Gemini-Powered Insights**: Stateless AI integration provides surgical advice on your spending habits without compromising data sovereignty.
+- **Segmented History Management**: An advanced Archive Journal with four-way sorting (Recent, Oldest, Largest, Smallest) for deep-dive forensic accounting.
+- **Receipt Extraction Engine**: Proprietary logic to transform raw receipt text or images into structured financial records in seconds.
 
-- **Framework**: [Next.js 15+ (App Router)](https://nextjs.org/)
-- **Language**: TypeScript
-- **Database**: [SQLite](https://www.sqlite.org/) (via [Better-SQLite3](https://github.com/WiseLibs/better-sqlite3) / [LibSQL](https://turso.tech/))
-- **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
-- **Authentication**: [Auth.js (NextAuth v5)](https://authjs.dev/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **UI Components**: [Shadcn UI](https://ui.shadcn.com/), [Radix UI](https://www.radix-ui.com/)
-- **Visualization**: [Recharts](https://recharts.org/), [Tremor](https://www.tremor.so/)
-- **AI**: [Google Gemini Pro](https://deepmind.google/technologies/gemini/)
+## 🛡️ Security & Isolation
+- **Hardware-Level Scoping**: Redundant user-id validation at the database query level to ensure 100% data isolation.
+- **Soft-Delete with Audit Logs**: Full traceability of every modification, restoration, and deletion within your ledger.
+- **Local Sovereignty**: Powered by SQLite/LibSQL, ensuring your raw financial history remains within your controlled infrastructure.
 
-## Getting Started
+## 🛠️ Technology Stack
+| Component | Technology |
+|---|---|
+| **Core** | Next.js 15 (App Router), TypeScript |
+| **Logic** | Drizzle ORM, SQLite / Turso |
+| **Motion** | Framer Motion (Custom Springs) |
+| **Style** | Tailwind CSS v4 (Modern HSL tokens) |
+| **Intelligence** | Google Gemini 1.5 Pro |
+| **Auth** | Auth.js (v5) |
 
+## 🚀 Deployment
 ### Prerequisites
-
 - Node.js 18+
 - npm
 
-### Installation
+### Quick Start
+1. **Clone & Install**
+   ```bash
+   git clone https://github.com/OMRed/flowly-ai.git
+   cd flowly-ai
+   npm install
+   ```
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/yourusername/flowly-ai.git
-    cd flowly-ai
-    ```
+2. **Environment Configuration**
+   Create a `.env` file:
+   ```env
+   DATABASE_URL="file:./flowly_prod.db"
+   AUTH_SECRET="your-secret"
+   GEMINI_API_KEY="your-api-key"
+   ```
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+3. **Database Migration**
+   ```bash
+   npm run db:push
+   ```
 
-3.  **Environment Setup:**
-    Create a `.env` file in the root directory and add the following:
-    
-    ```env
-    # Database (SQLite file path)
-    DATABASE_URL="file:./local.db"
-    
-    # Auth.js Secret (Generate with `npx auth secret`)
-    AUTH_SECRET="your-secret-here"
-    
-    # Google Gemini API Key (for AI insights & receipt parsing)
-    GEMINI_API_KEY="your-gemini-api-key"
-    ```
+4. **Launch Application**
+   ```bash
+   npm run dev
+   ```
 
-4.  **Database Setup:**
-    Push the schema to your local SQLite database:
-    ```bash
-    npm run db:push
-    ```
-    
-    *(Optional) Seed with demo data:*
-    ```bash
-    npm run db:seed
-    ```
+## 📜 Proprietary Notice
+Copyright (c) 2026 **OMRed**. All Rights Reserved.
+This software is provided under a **Proprietary License**. Unauthorized distribution, modification, or commercial use without prior acquisition is strictly prohibited. 
 
-5.  **Run Development Server:**
-    ```bash
-    npm run dev
-    ```
-    
-    Open [http://localhost:3000](http://localhost:3000) to view the app.
-
-## Project Structure
-
-- `src/app`: Next.js App Router pages and API routes.
-- `src/components`: Reusable UI components and specialized charts.
-- `src/lib`: Utility functions, types, and core deterministic logic.
-- `src/db`: Drizzle ORM schema and database connection setup.
-- `src/actions`: Server Actions for data mutation and AI processing.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is open-source and available under the [MIT License](LICENSE).
+**For acquisition inquiries, contact OMRed.**

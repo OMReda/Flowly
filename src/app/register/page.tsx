@@ -57,10 +57,21 @@ export default function RegisterPage() {
                         <AnimatePresence mode="wait">
                             {state?.error && (
                                 <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    className="p-4 text-xs text-rose-500 bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 rounded-lg flex items-center gap-3"
+                                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: 1,
+                                        y: 0,
+                                        x: [0, -4, 4, -4, 4, 0] // Subtle shake on entrance
+                                    }}
+                                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 500,
+                                        damping: 30,
+                                        x: { duration: 0.4, delay: 0.1 } // Shake timing
+                                    }}
+                                    className="p-4 text-xs text-rose-500 bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 rounded-lg flex items-center gap-3 shadow-[0_4px_12px_rgba(244,63,94,0.1)]"
                                 >
                                     <AlertCircle className="w-4 h-4 shrink-0" />
                                     {state.error}
