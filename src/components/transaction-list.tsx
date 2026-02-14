@@ -164,7 +164,7 @@ export function TransactionList({ transactions, showDelete = false, showCategori
                             className="group"
                         >
                             <div
-                                className="relative py-3 px-4 grid items-center transition-all duration-150 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 rounded-xl"
+                                className="relative py-5 px-4 grid items-center transition-all duration-150 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 rounded-xl"
                                 style={{ gridTemplateColumns: 'auto 1fr auto' }}
                             >
                                 {/* Column 1: Avatar (Reduced 15%) */}
@@ -177,11 +177,11 @@ export function TransactionList({ transactions, showDelete = false, showCategori
                                 </div>
 
                                 {/* Column 2: Merchant + Meta hierarchy */}
-                                <div className="min-w-0">
+                                <div className="min-w-0 pr-4">
                                     <h3 className="text-[14px] font-medium text-zinc-900 dark:text-zinc-100 leading-none truncate">
                                         {t.merchant}
                                     </h3>
-                                    <p className="text-[12px] font-normal text-zinc-400 dark:text-zinc-500 mt-1.5 flex items-center gap-1.5">
+                                    <p className="text-[12px] font-normal text-zinc-400 dark:text-zinc-500 mt-1.5 flex items-center gap-1.5 whitespace-nowrap">
                                         <span className="capitalize">{t.category}</span>
                                         <span className="text-zinc-200 dark:text-zinc-800">•</span>
                                         <span className="tabular-nums">{isMounted ? new Date(t.date || "").toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : "--"}</span>
@@ -197,9 +197,9 @@ export function TransactionList({ transactions, showDelete = false, showCategori
                                 {/* Column 3: Amount (Right aligned, Calibrated color) */}
                                 <div className="flex items-center gap-4 ml-6">
                                     <div className="text-right">
-                                        <p className={`text-[15px] font-medium tracking-tight tabular-nums transition-transform duration-100 group-hover:scale-[1.02] ${t.type === 'income'
-                                                ? 'text-emerald-600/90 dark:text-emerald-500/90'
-                                                : (t.amount > 500 ? 'text-rose-600 font-semibold' : 'text-rose-600/60 dark:text-rose-400/50')
+                                        <p className={`text-[15px] tracking-tight tabular-nums transition-transform duration-100 group-hover:scale-[1.02] ${t.type === 'income'
+                                            ? 'text-emerald-600/90 dark:text-emerald-500/90 font-medium'
+                                            : (t.amount > 500 ? 'text-rose-800/80 dark:text-rose-400/70 font-semibold' : 'text-rose-600/50 dark:text-rose-400/40 font-medium')
                                             }`}>
                                             {t.type === 'expense' ? '−' : '+'}${Number(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </p>
@@ -232,23 +232,25 @@ export function TransactionList({ transactions, showDelete = false, showCategori
                 </AnimatePresence>
             </div>
 
-            <div className="mt-2 flex items-center justify-center h-10 border-t border-zinc-50 dark:border-zinc-900/50">
-                <div className="flex items-center gap-6">
+            <div className="mt-8 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-6 px-8 py-3 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-100/50 dark:border-zinc-800/50">
                     <motion.button
-                        whileHover={{ y: -2, scale: 1.02 }}
+                        whileHover={{ y: -1 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => exportData('csv')}
-                        className="group flex items-center gap-2 h-6 px-2 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition-all"
+                        className="group flex items-center gap-2"
                     >
                         <Download className="w-3 h-3 text-zinc-400 group-hover:text-emerald-500 transition-colors" />
                         <span className="text-[9px] font-bold text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 uppercase tracking-widest leading-none pt-[1px] transition-colors">Export CSV</span>
                     </motion.button>
 
+                    <div className="w-[1px] h-3 bg-zinc-200 dark:bg-zinc-800" />
+
                     <motion.button
-                        whileHover={{ y: -2, scale: 1.02 }}
+                        whileHover={{ y: -1 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => exportData('json')}
-                        className="group flex items-center gap-2 h-6 px-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-all"
+                        className="group flex items-center gap-2"
                     >
                         <Download className="w-3 h-3 text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors" />
                         <span className="text-[9px] font-bold text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 uppercase tracking-widest leading-none pt-[1px] transition-colors">JSON</span>
