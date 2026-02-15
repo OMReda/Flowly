@@ -1,4 +1,4 @@
-# Flowly AI — Premium Financial Infrastructure
+# Flowly — Premium Financial Infrastructure
 
 **Clinical Precision. Deterministic Intelligence. Fluid Control.**
 
