@@ -47,8 +47,8 @@ A state-of-the-art stack focused on speed, type-safety, and local-first data sov
 ### Installation
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/OMRed/flowly-ai.git
-   cd flowly-ai
+   git clone https://github.com/OMReda/Flowly.git
+   cd Flowly
    ```
 
 2. **Install Dependencies**
