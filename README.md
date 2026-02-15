@@ -1,72 +1,83 @@
-# Flowly AI — Fluid Financial Infrastructure
+# Flowly AI — Premium Financial Infrastructure
 
-**High-Fidelity Financial Control, Deterministic Insights.**
+**Clinical Precision. Deterministic Intelligence. Fluid Control.**
 
-Flowly AI is a premium, privacy-centric financial ecosystem designed for those who demand precision, aesthetics, and privacy. Developed by **OMRed**, it merges clinical design with advanced data isolation and AI-assisted financial modeling.
+Flowly AI is a high-fidelity, privacy-centric financial operating system designed for individuals who demand surgical precision and a clinical design aesthetic. Developed by **OMRed**, it merges advanced data isolation with AI-assisted deterministic modeling to move beyond simple "expense tracking" into true **Behavioral Wealth Management**.
 
 > [!IMPORTANT]
 > **PROJECT STATUS: FOR SALE**
-> This project, including its intellectual property, source code, and design architecture, is currently available for acquisition. For professional inquiries or to discuss a project acquisition, please contact **OMRed**.
+> This project, including its full intellectual property, source code, design architecture, and branding, is currently available for acquisition. For professional inquiries, contact **OMRed**.
 
 ---
 
 ## 💎 Design Philosophy
-Flowly is built on the principle of **"Medical-Grade" UI**—minimalist, high-contrast, and focused on data density without clutter. Every interaction is fueled by **Framer Motion** spring physics to ensure the interface feels tactile and alive.
+Flowly is built on the principle of **"Command Console" density**—high-contrast, medical-grade UI that prioritizes information velocity without visual clutter.
+- **Surface Aesthetics**: Modern HSL-based color tokens with a deep obsidian palette.
+- **Physicality**: Every interaction is fueled by **Framer Motion** spring physics, making the interface feel tactile, responsive, and alive.
+- **Visual Hierarchy**: Data is weighted and anchored to eliminate lopsidedness, creating a balanced, high-density dashboard experience.
 
 ## 🧠 Core Intelligence
-- **Deterministic Forecasting**: Unlike standard apps, Flowly uses weighted temporal averages to project future spend with high mathematical confidence.
-- **Gemini-Powered Insights**: Stateless AI integration provides surgical advice on your spending habits without compromising data sovereignty.
-- **Segmented History Management**: An advanced Archive Journal with four-way sorting (Recent, Oldest, Largest, Smallest) for deep-dive forensic accounting.
-- **Receipt Extraction Engine**: Proprietary logic to transform raw receipt text or images into structured financial records in seconds.
+Designed to eliminate "guesswork" in personal finance through deterministic logic:
 
-## 🛡️ Security & Isolation
-- **Hardware-Level Scoping**: Redundant user-id validation at the database query level to ensure 100% data isolation.
-- **Soft-Delete with Audit Logs**: Full traceability of every modification, restoration, and deletion within your ledger.
-- **Local Sovereignty**: Powered by SQLite/LibSQL, ensuring your raw financial history remains within your controlled infrastructure.
+- **Pulse Intelligence**: A real-time system vitality engine that monitors spending momentum, efficiency, and behavioral patterns.
+- **Roast & Boast**: A personality-driven feedback loop that holds you accountable. It intelligently celebrates discipline and "roasts" lifestyle expansion, adapting its tone and styling based on your live spending data.
+- **Deterministic Forecasting**: Unlike standard arithmetic projections, Flowly use weighted temporal averages and anomaly-filtered daily limits to project future month-end spend with high mathematical confidence.
+- **Precision Budget Pacing**: Get data-driven context for every dollar. Flowly calculates your **Recommended Daily Limit** vs. your **Current Daily Average** in real-time, clamping negative values to zero and providing immediate recovery guidance if the budget is breached.
+- **Smart Insight Framing**: Insights are automatically gated by confidence levels (e.g., "Early Pattern Detected"), ensuring the system never over-promises on limited data.
 
 ## 🛠️ Technology Stack
-| Component | Technology |
+A state-of-the-art stack focused on speed, type-safety, and local-first data sovereignty.
+
+| Layer | Technology |
 |---|---|
-| **Core** | Next.js 15 (App Router), TypeScript |
-| **Logic** | Drizzle ORM, SQLite / Turso |
-| **Motion** | Framer Motion (Custom Springs) |
-| **Style** | Tailwind CSS v4 (Modern HSL tokens) |
-| **Intelligence** | Google Gemini 1.5 Pro |
-| **Auth** | Auth.js (v5) |
+| **Framework** | **Next.js 16** (App Router, Server Actions) |
+| **Logic** | **TypeScript** (Static Typing), **Drizzle ORM** |
+| **Data** | **SQLite / LibSQL** (Local-Sovereignty, High-Performance) |
+| **Animation** | **Framer Motion** (Custom Physics-based Motion) |
+| **Styling** | **Tailwind CSS v4** (Modern CSS Architecture) |
+| **AI Engine** | **Google Gemini 1.5 Pro** (Stateless Analysis) |
+| **Authentication** | **Auth.js (v5)** (Secure, Edge-ready) |
 
-## 🚀 Deployment
+## 🚀 Deployment & Setup
+
 ### Prerequisites
-- Node.js 18+
-- npm
+- Node.js 18.x or 20.x
+- npm / pnpm
 
-### Quick Start
-1. **Clone & Install**
+### Installation
+1. **Clone the Repository**
    ```bash
    git clone https://github.com/OMRed/flowly-ai.git
    cd flowly-ai
+   ```
+
+2. **Install Dependencies**
+   ```bash
    npm install
    ```
 
-2. **Environment Configuration**
-   Create a `.env` file:
+3. **Configure Environment**
+   Create a `.env.local` file with the following keys:
    ```env
    DATABASE_URL="file:./flowly_prod.db"
-   AUTH_SECRET="your-secret"
-   GEMINI_API_KEY="your-api-key"
+   AUTH_SECRET="your-generated-secret"
+   GEMINI_API_KEY="your-google-ais-key"
    ```
 
-3. **Database Migration**
+4. **Initialize Database**
    ```bash
    npm run db:push
    ```
 
-4. **Launch Application**
+5. **Spin Up Development Server**
    ```bash
    npm run dev
    ```
 
 ## 📜 Proprietary Notice
 Copyright (c) 2026 **OMRed**. All Rights Reserved.
-This software is provided under a **Proprietary License**. Unauthorized distribution, modification, or commercial use without prior acquisition is strictly prohibited. 
 
-**For acquisition inquiries, contact OMRed.**
+This software is provided under a **Proprietary License**. Unauthorized distribution, modification, reverse-engineering, or commercial exploitation without prior acquisition of the intellectual property is strictly prohibited. 
+
+**For acquisition inquiries or to schedule a demo, contact OMRed.**
+
