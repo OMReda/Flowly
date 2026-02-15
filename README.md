@@ -2,11 +2,11 @@
 
 **Clinical Precision. Deterministic Intelligence. Fluid Control.**
 
-Flowly AI is a high-fidelity, privacy-centric financial operating system designed for individuals who demand surgical precision and a clinical design aesthetic. Developed by **OMRed**, it merges advanced data isolation with AI-assisted deterministic modeling to move beyond simple "expense tracking" into true **Behavioral Wealth Management**.
+Flowly AI is a high-fidelity, privacy-centric financial operating system designed for individuals who demand surgical precision and a clinical design aesthetic. Developed by **OMReda**, it merges advanced data isolation with AI-assisted deterministic modeling to move beyond simple "expense tracking" into true **Behavioral Wealth Management**.
 
 > [!IMPORTANT]
 > **PROJECT STATUS: FOR SALE**
-> This project, including its full intellectual property, source code, design architecture, and branding, is currently available for acquisition. For professional inquiries, contact **OMRed**.
+> This project, including its full intellectual property, source code, design architecture, and branding, is currently available for acquisition. For professional inquiries, contact **OMReda**.
 
 ---
 
@@ -75,9 +75,8 @@ A state-of-the-art stack focused on speed, type-safety, and local-first data sov
    ```
 
 ## 📜 Proprietary Notice
-Copyright (c) 2026 **OMRed**. All Rights Reserved.
+Copyright (c) 2026 **OMReda**. All Rights Reserved.
 
 This software is provided under a **Proprietary License**. Unauthorized distribution, modification, reverse-engineering, or commercial exploitation without prior acquisition of the intellectual property is strictly prohibited. 
 
-**For acquisition inquiries or to schedule a demo, contact OMRed.**
-
+**For acquisition inquiries or to schedule a demo, contact OMReda.**

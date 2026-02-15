@@ -36,7 +36,7 @@ export function AuthHero() {
     }, []);
 
     return (
-        <div className="relative w-full h-full bg-zinc-950 flex flex-col justify-end p-12 overflow-hidden group/hero" data-developer="OMRed">
+        <div className="relative w-full h-full bg-zinc-950 flex flex-col justify-end p-12 overflow-hidden group/hero" data-developer="OMReda">
             <AnimatePresence mode="wait">
                 <motion.div
                     key={currentShot}
@@ -101,7 +101,7 @@ export function AuthHero() {
             <div className="absolute bottom-12 right-12 z-10 flex items-center gap-2">
                 <div className="w-1 h-1 rounded-full bg-emerald-500/50" />
                 <p className="text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase">
-                    Developed by <span className="text-white/60">OMRed</span>
+                    Developed by <span className="text-white/60">OMReda</span>
                 </p>
             </div>
         </div>

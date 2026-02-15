@@ -125,7 +125,7 @@ export function DashboardLayout({
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-zinc-950 font-sans text-zinc-900 dark:text-zinc-100" data-developer="OMRed">
+        <div className="min-h-screen bg-white dark:bg-zinc-950 font-sans text-zinc-900 dark:text-zinc-100" data-developer="OMReda">
             <AnimatePresence>
                 {mounted && showOnboarding && (
                     <OnboardingModal
@@ -402,7 +402,7 @@ export function DashboardLayout({
                 <div className="flex items-center gap-2">
                     <div className="w-1 h-1 rounded-full bg-emerald-500/50" />
                     <p className="text-[10px] font-bold tracking-[0.2em] text-zinc-300 dark:text-zinc-700 uppercase">
-                        Developed by <span className="text-zinc-400 dark:text-zinc-600">OMRed</span>
+                        Developed by <span className="text-zinc-400 dark:text-zinc-600">OMReda</span>
                     </p>
                 </div>
                 <p className="text-[8px] font-bold tracking-[0.1em] text-zinc-300/50 dark:text-zinc-700/50 uppercase">

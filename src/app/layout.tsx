@@ -20,9 +20,9 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Flowly",
   description: "Experience fluid financial control with AI-powered insights and forecasting.",
-  authors: [{ name: "OMRed" }],
-  creator: "OMRed",
-  publisher: "OMRed",
+  authors: [{ name: "OMReda" }],
+  creator: "OMReda",
+  publisher: "OMReda",
   icons: {
     icon: "/favicon.svg",
   },

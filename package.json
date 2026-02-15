@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Flowly AI - Fluid Financial Control by OMRed",
-  "author": "OMRed",
+  "author": "OMReda",
   "license": "UNLICENSED",
   "scripts": {
     "dev": "next dev",

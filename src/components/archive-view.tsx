@@ -370,7 +370,7 @@ export function ArchiveView({ transactions }: ArchiveViewProps) {
             <footer className="pt-12 pb-24 text-center space-y-8">
                 <div className="max-w-md mx-auto p-6 rounded-3xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-800 opacity-60 hover:opacity-100 transition-opacity">
                     <p className="text-[10px] font-bold tracking-[0.2em] text-zinc-400 uppercase mb-3">Project Status</p>
-                    <h4 className="text-lg font-serif mb-2 text-zinc-900 dark:text-zinc-50">Designed & Owned by OMRed</h4>
+                    <h4 className="text-lg font-serif mb-2 text-zinc-900 dark:text-zinc-50">Designed & Owned by OMReda</h4>
                     <p className="text-xs text-zinc-500 leading-relaxed px-4">
                         This application is currently available for acquisition. Contact the owner for project acquisition or professional inquiries.
                     </p>

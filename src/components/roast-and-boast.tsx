@@ -114,9 +114,10 @@ export function RoastAndBoast({ transactions, budget = 1000 }: RoastAndBoastProp
                     </div>
 
                     <div className="space-y-2">
-                        <h3 className="text-2xl font-serif tracking-tight font-semibold text-zinc-900 dark:text-zinc-50 leading-tight">
-                            {title}
-                        </h3>
+                        <div className="max-w-md mx-auto p-6 rounded-3xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-800 opacity-60 hover:opacity-100 transition-opacity">
+                            <p className="text-[10px] font-bold tracking-[0.2em] text-zinc-400 uppercase mb-3">Project Status</p>
+                            <h4 className="text-lg font-serif mb-2 text-zinc-900 dark:text-zinc-50">Designed & Owned by OMReda</h4>
+                        </div>
                         <p className="text-sm text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed border-l-2 border-zinc-200 dark:border-zinc-800 pl-4">
                             {message}
                         </p>
