@@ -83,13 +83,22 @@ export function DashboardLayout({
     }, [userProfile?.id, userProfile?.onboarding_completed, dismissed]);
 
     const formatDelta = (val: number | undefined | null, inverse = false) => {
-        if (val === undefined || val === null || isNaN(val)) return null;
+        // If null, it's the "First recorded month" scenario
+        if (val === null) {
+            return (
+                <div className="flex items-baseline h-[32px]">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] whitespace-nowrap opacity-40">
+                        First month
+                    </span>
+                </div>
+            );
+        }
+
+        if (val === undefined || isNaN(val)) return null;
         const isPos = val > 0;
         const isNeut = val === 0;
 
         // Determination of "Good" vs "Bad" trend
-        // For Spent (inverse=true): Down is Green, Up is Red
-        // For Balance (inverse=false): Up is Green, Down is Red
         const isGood = inverse ? !isPos : isPos;
 
         const colorClass = isNeut
@@ -99,7 +108,7 @@ export function DashboardLayout({
         const Icon = isNeut ? Minus : (isPos ? TrendingUp : TrendingDown);
 
         return (
-            <div className="flex flex-col items-start ml-3 min-w-[70px] h-[32px]">
+            <div className="flex flex-col items-start ml-3 min-w-[70px] h-[32px] group">
                 <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full ${colorClass} transition-all duration-300 group-hover:bg-opacity-20`}>
                     <Icon className="w-2.5 h-2.5" />
                     <span className="text-[10px] font-bold">
@@ -363,7 +372,7 @@ export function DashboardLayout({
                                         </Link>
                                     </div>
                                     <div className="relative group p-6 rounded-[32px] bg-zinc-50/30 dark:bg-zinc-900/20 border border-zinc-100/50 dark:border-zinc-800/50">
-                                        <TransactionList transactions={allTransactions.slice(0, 10)} hasAiKey={hasAiKey} />
+                                        <TransactionList transactions={allTransactions.slice(0, 12)} hasAiKey={hasAiKey} />
 
                                         <Link href="/archive" className="mt-8 pt-4 border-t border-zinc-100 dark:border-zinc-900 text-[10px] font-black tracking-[0.2em] text-zinc-400 hover:text-emerald-500 uppercase flex items-center justify-center gap-2 transition-colors">
                                             Detailed History

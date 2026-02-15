@@ -185,7 +185,7 @@ export function MLInsights({ data }: { data: DeterministicInsights | null }) {
                         <div className="flex items-center gap-2">
                             <div className={`w-2 h-2 rounded-full ${data.is_low_data ? 'bg-amber-400' : 'bg-emerald-500 animate-pulse'}`}></div>
                             <span className="font-semibold text-zinc-700 dark:text-zinc-300">
-                                {data.is_low_data ? `Learning Mode: Need ${5 - (data.data_points || 0)} more expenses` : 'Analysis Reliable'}
+                                {data.is_low_data ? `Learning Mode: Need ${5 - (data.data_points || 0)} more expenses` : 'Analysis Active'}
                             </span>
                         </div>
                         <span className="uppercase tracking-widest text-[10px] font-medium text-zinc-400">System Status</span>

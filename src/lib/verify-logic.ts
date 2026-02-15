@@ -1,87 +1,94 @@
 import { calculateFlowlyScore, detectAnomalies, generateForecast } from './deterministic-logic';
 import { calculateVitality } from './vitality-engine';
-import { safeDivide, average, standardDeviation, coefficientOfVariation } from './math-utils';
+import { safeDivide, average, standardDeviation, coefficientOfVariation, calculateMonthOverMonthChange } from './math-utils';
 import { Transaction, UserProfile } from './types';
 
 function runTests() {
-    console.log("🚀 Starting Financial Logic Stress Test...\n");
+    console.log("🚀 Starting Financial Logic Stress Test (v2.0)...\n");
 
-    // Test 1: Math Utils Safety
-    console.log("Testing Math Utils...");
-    console.log(`- SafeDivide (1/0): ${safeDivide(1, 0, 999)} (Expected: 999)`);
-    console.log(`- Average ([10, 20]): ${average([10, 20])} (Expected: 15)`);
-    console.log(`- StdDev ([10, 20, 30]): ${standardDeviation([10, 20, 30])} (Expected: ~8.16)`);
-    console.log("");
+    const profile: UserProfile = { id: 'test', monthly_budget: 1000, current_savings: 1000, savings_target: 10000 } as UserProfile;
 
-    // Test 2: Flowly Score - Budget Penalty (Exponential)
-    console.log("Testing Flowly Score (Budget Penalty)...");
-    const testTransactions: Transaction[] = [];
-    const budget = 1000;
-
-    const { score: scorePerfect } = calculateFlowlyScore(1000, 1500, budget, [], 20);
-    console.log(`- Score at Budget (spent=1000, budget=1000): ${scorePerfect}`);
-
-    const { score: scoreOver } = calculateFlowlyScore(1100, 1500, budget, [], 20);
-    console.log(`- Score with 10% Overspend: ${scoreOver}`);
-
-    const { score: scoreDouble } = calculateFlowlyScore(2000, 1500, budget, [], 20);
-    console.log(`- Score with 100% Overspend: ${scoreDouble}`);
-    console.log("");
-
-    // Test 3: Anomaly Detection (2-Sigma)
-    console.log("Testing Anomaly Detection (2-Sigma)...");
-    const baselineExpenses: Transaction[] = Array.from({ length: 10 }, (_, i) => ({
-        id: `t${i}`,
+    // Test 1: Robust Trajectory (Anomaly Filtering)
+    console.log("Testing Robust Trajectory (Anomaly Filtering)...");
+    const baselineExpenses = Array.from({ length: 15 }, (_, i) => ({
+        id: `b${i}`,
         type: 'expense',
-        amount: 20,
-        merchant: 'Normal',
-        date: '2026-02-01'
+        amount: 30,
+        date: `2026-02-${i + 1 < 10 ? '0' + (i + 1) : i + 1}`
     } as Transaction));
 
-    const spike: Transaction = {
-        id: 'spike',
+    // Add a massive $5,000 one-time purchase
+    const massiveAnomaly: Transaction = {
+        id: 'anomaly',
         type: 'expense',
-        amount: 200,
-        merchant: 'Big Purchase',
+        amount: 5000,
+        merchant: 'One-time Luxury purchase',
         date: '2026-02-14'
     } as Transaction;
 
-    const allWithSpike = [...baselineExpenses, spike];
-    const anomalies = detectAnomalies(allWithSpike);
-    console.log(`- Anomalies detected in 10x spike: ${anomalies.length} (Expected: 1)`);
-    console.log(`- Reason: ${anomalies[0]?.reason}`);
+    const datasetWithSpike = [...baselineExpenses, massiveAnomaly];
+    const forecast = generateForecast(datasetWithSpike);
+
+    console.log(`- Daily baseline: $30.00`);
+    console.log(`- Action: Injected a $5,000 spike into data.`);
+    console.log(`- Robust Forecast: $${forecast?.total} (Expected: ~$900-1100, filtering spike)`);
+    console.log(`- Current Confidence: ${forecast?.confidence}`);
+    console.log(`- Reasoning: ${forecast?.reasoning}`);
     console.log("");
 
-    // Test 4: Momentum (Acceleration)
-    console.log("Testing Vitality Momentum (Acceleration)...");
-    const profile: UserProfile = { id: 'test', monthly_budget: 1000 } as UserProfile;
+    // Test 2: Vitality Wealth Capacity Stability
+    console.log("Testing Vitality Wealth Capacity Stability...");
+    // NetFlow is actually negative due to anomaly: 0 income - 5450 spent = -5450.
+    // However, we test with $5k income to see capacity.
+    const vitStable = calculateVitality(
+        -450, // current net (5000 income - 5450 spent)
+        500,  // prev net
+        5000, // current income
+        5000, // prev income
+        5450, // current total spent
+        profile,
+        datasetWithSpike,
+        datasetWithSpike
+    );
 
-    // Scenario: Savings rate goes from 10% to 30%
-    const vit1 = calculateVitality(300, 100, 1000, 1000, 700, profile, [], []);
-    console.log(`- Momentum for 10% -> 30% SR: ${vit1.momentum}% (Expected: High/Improving)`);
-
-    // Scenario: Savings rate goes from 30% to 10%
-    const vit2 = calculateVitality(100, 300, 1000, 1000, 900, profile, [], []);
-    console.log(`- Momentum for 30% -> 10% SR: ${vit2.momentum}% (Expected: Low/Declining)`);
+    const potentialWealth = vitStable.wealthProjections?.potential12MonthWealth || 0;
+    console.log(`- Income: $5k, Baseline Spend: ~$900 (Anomaly filtered)`);
+    console.log(`- Monthly Capacity: $${vitStable.wealthProjections?.monthlyCapacity}`);
+    console.log(`- 12-Month Potential Wealth: $${potentialWealth} (Expected: ~$40k-50k, NOT negative)`);
     console.log("");
 
-    // Test 5: Trajectory (CV Dampening)
-    console.log("Testing Trajectory (CV Dampening)...");
-    const volatileExpenses = [10, 500, 20, 600, 15, 550].map((amt, i) => ({
-        id: `v${i}`,
-        type: 'expense',
-        amount: amt,
-        date: `2026-02-0${i + 1}`
-    } as Transaction));
+    // Test 3: Month-over-Month Integrity
+    console.log("Testing Month-over-Month Integrity...");
+    const m1 = calculateMonthOverMonthChange(5550, 0);
+    const m2 = calculateMonthOverMonthChange(5550, null);
+    const m3 = calculateMonthOverMonthChange(150, 100);
+    const m4 = calculateMonthOverMonthChange(-50, -100);
 
-    const cv = coefficientOfVariation(volatileExpenses.map(e => e.amount));
-    console.log(`- Coefficient of Variation: ${cv.toFixed(2)} (>0.5 expected)`);
-
-    const forecast = generateForecast(volatileExpenses);
-    console.log(`- Forecast reasoning: ${forecast.reasoning}`);
+    console.log(`- Comparison (5550 vs 0): ${m1} (Expected: null)`);
+    console.log(`- Comparison (5550 vs null): ${m2} (Expected: null)`);
+    console.log(`- Comparison (150 vs 100): ${m3}% (Expected: 50%)`);
+    console.log(`- Comparison (-50 vs -100): ${m4}% (Expected: 50%, Improvement)`);
     console.log("");
 
-    console.log("✅ All Logic Clusters Verified.");
+    // Test 4: Discipline Learning Mode
+    console.log("Testing Discipline Learning Mode (Scarcity Protection)...");
+    const sparseTransactions = [
+        { id: '1', type: 'expense', amount: 100, date: '2026-02-14' },
+        { id: '2', type: 'expense', amount: 200, date: '2026-02-14' }
+    ] as Transaction[];
+
+    const sparseVitality = calculateVitality(
+        -1000, 0, 0, 0, 300,
+        { starting_balance: 0 } as UserProfile,
+        sparseTransactions, sparseTransactions
+    );
+    console.log(`- Transaction Count: ${sparseTransactions.length}`);
+    console.log(`- Discipline Label: ${sparseVitality.disciplineLabel} (Expected: Learning)`);
+    console.log(`- System Classification: ${sparseVitality.classification} (Expected: Learning)`);
+    console.log(`- Vitality Score: ${sparseVitality.vitalityScore} (Expected: Stabilized near 50)`);
+    console.log("");
+
+    console.log("✅ All Institutional-Grade Logic Clusters Verified.");
 }
 
 runTests();

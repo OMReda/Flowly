@@ -54,3 +54,18 @@ export function coefficientOfVariation(arr: number[]): number {
     const std = standardDeviation(arr);
     return safeDivide(std, mean, 0);
 }
+/**
+ * Calculates Month-over-Month percentage change with strict financial guards.
+ * Returns null if the comparison is invalid (missing history or 0 baseline).
+ */
+export function calculateMonthOverMonthChange(current: number, previous: number | null | undefined): number | null {
+    if (previous === null || previous === undefined || Math.abs(previous) < 1e-6) {
+        return null; // Financial integrity: No prior baseline
+    }
+
+    // Formula: ((current - previous) / Math.abs(previous)) * 100
+    const change = ((current - previous) / Math.abs(previous)) * 100;
+
+    // Round to 1 decimal place for clean UI
+    return Math.round(change * 10) / 10;
+}

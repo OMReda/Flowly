@@ -158,7 +158,7 @@ export function CategoryDistChart({ data }: { data: CategoryData[] }) {
             </div>
 
             {/* Compact Legend */}
-            <div className="grid grid-cols-1 gap-1.5 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800/50">
+            <div className="grid grid-cols-1 gap-2.5 mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/50">
                 {chartData.slice(0, 3).map((item) => (
                     <div
                         key={item.name}

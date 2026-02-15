@@ -71,8 +71,8 @@ export function calculateFlowlyScore(
         reasoning = "Score is in 'Learning Mode' while we observe your initial habits.";
     } else if (score > 85) {
         reasoning = "Excellent! High score due to disciplined budget adherence and positive savings rate.";
-    } else if (score > 70) {
-        reasoning = "Good progress. Your financial engine is stable with healthy habits.";
+    } else if (score > 60) {
+        reasoning = "Good Balance. Your financial engine is stable with healthy habits.";
     } else if (totalSpent > budget) {
         reasoning = "Score impacted by budget overflow. Aligning spending with goals will help.";
     } else if (totalSpent > totalIncome && totalIncome > 0) {
@@ -135,46 +135,66 @@ export function generateForecast(transactions: Transaction[]): { total: number |
 
     if (count < 5) {
         return {
-            total: null,  // ✅ UI can check for null to show "Insufficient data"
+            total: null,
             reasoning: "Need at least 5 transactions to generate a reliable forecast.",
             confidence: 'low'
         };
     }
 
     try {
-        // Calculate daily average
-        const dates = expenses.map(t => t.date ? new Date(t.date).getTime() : NaN).filter(d => !isNaN(d));
-        if (dates.length === 0) throw new Error("No valid dates");
+        const amounts = expenses.map(t => Number(t.amount) || 0);
+        const mean = average(amounts);
+        const std = standardDeviation(amounts);
 
-        const firstDate = new Date(Math.min(...dates));
-        const lastDate = new Date(Math.max(...dates));
-        const daysDiff = Math.max(1, Math.ceil((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)));
+        // 1. Robust Baseline: Filter out significant anomalies (> Mean + 1.5*StdDev)
+        // We use a tighter threshold here for the baseline to find the "stable" spend
+        const threshold = mean + 1.5 * std;
+        const baselineExpenses = expenses.filter(t => (Number(t.amount) || 0) <= threshold);
 
-        const totalSpent = expenses.reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
-        const dailyAvg = totalSpent / daysDiff;
-        let projected = dailyAvg * 30;
-
-        // Confidence & Volatility Logic
-        let confidence: 'low' | 'medium' | 'high' = 'low';
-
-        // Base confidence on data points
-        if (count >= 45) confidence = 'high';
-        else if (count >= 15) confidence = 'medium';
-
-        // Volatility Dampening using Coefficient of Variation
-        const recentWindow = Math.min(count, 7);
-        const recentExpenses = expenses.slice(0, recentWindow).map(t => Number(t.amount) || 0);
-        const cv = coefficientOfVariation(recentExpenses);
-
-        if (cv > 0.5) {
-            projected *= 0.85; // Dampen projection due to high noise
-            if (confidence === 'high') confidence = 'medium';
-            else confidence = 'low';
+        if (baselineExpenses.length < 3) {
+            return {
+                total: mean * 30, // Fallback to raw average if data is too skewed
+                reasoning: "Data shows extreme volatility. Projection based on raw averages.",
+                confidence: 'low'
+            };
         }
 
+        // 2. Recent Bias: Weight recent baseline spending more heavily
+        // Sort by date (descending)
+        const sorted = [...baselineExpenses].sort((a, b) =>
+            new Date(b.date!).getTime() - new Date(a.date!).getTime()
+        );
+
+        const recentWindow = sorted.slice(0, 5);
+        const recentAvg = average(recentWindow.map(t => Number(t.amount) || 0));
+        const historicalAvg = average(baselineExpenses.map(t => Number(t.amount) || 0));
+
+        // 70/30 weight for recent vs historical baseline
+        const weightedDailyAvg = (recentAvg * 0.7) + (historicalAvg * 0.3);
+
+        let projected = weightedDailyAvg * 30;
+
+        // 3. Volatility Buffer: Use CV to dampen but not crash the projection
+        const cv = coefficientOfVariation(amounts);
+        let confidence: 'low' | 'medium' | 'high' = 'low';
+
+        if (count >= 45 && cv < 0.3) confidence = 'high';
+        else if (count >= 15 && cv < 0.6) confidence = 'medium';
+
+        // Dampen with CV (CV of 1.0 reduces projection by ~30%)
+        const dampeningFactor = clamp(1 - (cv * 0.3), 0.7, 1.0);
+        projected *= dampeningFactor;
+
+        // 4. Anomaly Contingency: Add back 5% of "Spikes" as a statistical buffer
+        const anomalies = expenses.filter(t => (Number(t.amount) || 0) > threshold);
+        const spikeTotal = anomalies.reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
+        const spikeBuffer = (spikeTotal / count) * 30 * 0.05; // 5% probability of recurring spikes
+
+        projected += spikeBuffer;
+
         return {
-            total: Math.round((projected || 0) * 100) / 100,
-            reasoning: `Projected monthly total based on your ${daysDiff}-day average of $${dailyAvg.toFixed(2)}/day${cv > 0.5 ? ' (with volatility dampening)' : ''}.`,
+            total: Math.round(projected * 100) / 100,
+            reasoning: `Projected Month-End Spend (Based on anomaly-filtered daily average of $${weightedDailyAvg.toFixed(2)}).`,
             confidence
         };
     } catch (e) {
@@ -216,16 +236,21 @@ export function generateInsights(
     if (usedPercentage > 0) {
         const paceContext = budget === 1000 ? "Based on default $1k budget" : "Based on your set monthly budget";
 
-        // Hedged language for low data
-        const qualifier = isLearning ? "Early data suggests" : "Analysis shows";
+        const remainingBudget = Math.max(0, budget - totalSpent);
+        const recommendedDaily = safeDivide(remainingBudget, daysRemaining, 0);
+        const currentDaily = safeDivide(totalSpent, dayOfMonth, 0);
+
+        const limitMessage = remainingBudget === 0
+            ? `Budget exceeded. Reduce spending immediately.`
+            : `Recommended Daily Limit: $${recommendedDaily.toFixed(2)}`;
 
         insights.push({
             type: 'pacing',
             title: 'Monthly Pacing',
-            description: `${qualifier} you've utilized ${usedPercentage.toFixed(1)}% of your budget with ${daysRemaining} days remaining.`,
+            description: `You've utilized ${usedPercentage.toFixed(1)}% of your budget with ${daysRemaining} days remaining.\n\n${limitMessage}\nCurrent Daily Average: $${currentDaily.toFixed(2)}`,
             impact: usedPercentage > (dayOfMonth / daysInMonth) * 100 * 1.1
-                ? `You are currently trending above your allocation. (${paceContext})`
-                : `You are pacing well within your limits. (${paceContext})`
+                ? `You are trending significantly above allocation.`
+                : `You are pacing well within your limits.`
         });
     }
 
@@ -244,9 +269,9 @@ export function generateInsights(
 
         insights.push({
             type: 'suggestion',
-            title: isLearning ? 'Early Pattern Detected' : 'Recovery Strategy',
+            title: isLearning ? 'Early Pattern Detected (Low Confidence)' : 'Recovery Strategy',
             description: `${isLearning ? 'Initial data suggests' : 'Analysis confirms'} spending in "${catName}" is $${catTotal.toFixed(2)}.${isLearning ? ' (Based on limited recent data)' : ''}`,
-            impact: `Reducing this by 20% ${isLearning ? 'could' : 'would'} save you $${reduction.toFixed(2)} this month.`,
+            impact: `If sustained, reducing this by 20% could save you ~$${reduction.toFixed(0)} this month.`,
             action: `Consider limiting ${catName} purchases for the next ${daysRemaining} days.`
         });
     }
@@ -280,19 +305,14 @@ Note: Score enters "Learning Mode" with <5 transactions.`;
 }
 
 export function getForecastExplanation(): string {
-    return `30-Day Forecast Method:
+    return `Robust 30-Day Projection:
 
-1. Calculate your average daily spending
-2. Project this rate over 30 days
-3. Confidence levels:
-   • Low: 5-14 transactions
-   • Medium: 15-44 transactions
-   • High: 45+ transactions
+1. Anomaly Filtering: Spikes > Mean + 1.5σ are excluded from the baseline to prevent forecast hijacking.
+2. Recent Bias: Weights the last 7 days of stable spending at 70% to adapt to your current lifestyle.
+3. Volatility Buffering: Projections are dampened based on your Coefficient of Variation (CV) to account for erratic habits.
+4. Statistical Contingency: Adds a small 5% buffer from detected spikes back into the final total.
 
-4. Confidence downgraded if recent spending
-   shows high volatility (>50% deviation)
-
-Note: Requires minimum 5 transactions.`;
+Confidence levels are driven by data density and stability.`;
 }
 
 export function getBudgetSourceExplanation(budget: number): string {

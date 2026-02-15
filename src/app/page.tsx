@@ -9,14 +9,9 @@ import { Transaction, UserProfile } from "@/lib/types";
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-import {
-  calculateFlowlyScore,
-  detectAnomalies,
-  generateForecast,
-  generateInsights
-} from "@/lib/deterministic-logic";
+import { calculateFlowlyScore, detectAnomalies, generateForecast, generateInsights } from "@/lib/deterministic-logic";
 import { calculateVitality } from "@/lib/vitality-engine";
-import { safeDivide, clamp } from "@/lib/math-utils";
+import { safeDivide, clamp, calculateMonthOverMonthChange } from "@/lib/math-utils";
 
 export default async function Home() {
   const session = await auth();
@@ -127,22 +122,13 @@ export default async function Home() {
 
   const prevNetForMonth = prevMonthIncome - prevMonthSpent;
 
-  // Stable Deltas: Prevents unrealistic % spikes when base is small
-  const calculateDelta = (current: number, previous: number) => {
-    const threshold = 50;
-    if (Math.abs(previous) < threshold) {
-      return current - previous; // Return absolute change for small bases
-    }
-    return safeDivide(current - previous, Math.abs(previous), 0) * 100;
-  };
-
-  const spendingDelta = calculateDelta(currentMonthSpent, prevMonthSpent);
-  const netDelta = calculateDelta(currentNetForMonth, prevNetForMonth);
+  const spendingDelta = calculateMonthOverMonthChange(currentMonthSpent, prevMonthSpent);
+  const netDelta = calculateMonthOverMonthChange(currentNetForMonth, prevNetForMonth);
 
   // Volume Delta
   const currentVolume = currentMonthExpenses.length + analysisTransactions.filter(t => t.type === 'income' && t.date && t.date.startsWith(currentMonthStr)).length;
   const prevVolume = prevMonthTransactions.length;
-  const volumeDelta = calculateDelta(currentVolume, prevVolume);
+  const volumeDelta = calculateMonthOverMonthChange(currentVolume, prevVolume);
 
   const deltas = {
     spent: spendingDelta,

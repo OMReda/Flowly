@@ -15,9 +15,9 @@ export interface VitalityMetrics {
         potential12MonthWealth: number;
     };
     disciplineScore: number; // 0 to 100
-    disciplineLabel: 'Critical' | 'Unstable' | 'Controlled' | 'Strong' | 'Elite';
+    disciplineLabel: 'Learning' | 'Critical' | 'Unstable' | 'Recovering' | 'Controlled' | 'Strong' | 'Elite';
     vitalityScore: number; // 0 to 100
-    classification: 'Critical' | 'Unstable' | 'Recovering' | 'Healthy' | 'Elite';
+    classification: 'Learning' | 'Critical' | 'Unstable' | 'Recovering' | 'Healthy' | 'Elite';
     insights: string[];
 }
 
@@ -70,8 +70,21 @@ export function calculateVitality(
     const targetGoal = profile.savings_target || 0;
     const progressPercentage = targetGoal > 0 ? (currentSaved / targetGoal) * 100 : 0;
 
-    // Time to Goal
-    const monthlyCapacity = income - (profile.fixed_expenses || 0) - (expenses / 1); // Simplistic monthly capacity
+    // Time to Goal (Robust Capacity Projection)
+    // We calculate a stable daily expense avg excluding anomalies for the wealth forecast
+    const monthExpenses = currentMonthTransactions.filter(t => t.type === 'expense');
+    const m_amounts = monthExpenses.map(t => Number(t.amount) || 0);
+    const m_mean = average(m_amounts);
+    const m_std = standardDeviation(m_amounts);
+    const m_threshold = m_mean + 1.5 * m_std;
+    const stableExpenses = monthExpenses.filter(t => (Number(t.amount) || 0) <= m_threshold);
+
+    // Fallback to current monthly expenses if data is too thin
+    const stableMonthlySpend = stableExpenses.length >= 3
+        ? average(stableExpenses.map(t => Number(t.amount) || 0)) * 30
+        : (expenses || profile.fixed_expenses || 0);
+
+    const monthlyCapacity = income - (profile.fixed_expenses || 0) - stableMonthlySpend;
     const remainingToSave = targetGoal - currentSaved;
     let monthsRemaining = null;
     if (remainingToSave > 0 && monthlyCapacity > 0) {
@@ -109,12 +122,24 @@ export function calculateVitality(
     discipline = Math.max(0, Math.min(100, discipline));
 
     // Discipline Classification
+    const isDisciplineLearning = currentMonthTransactions.length < 5;
     let disciplineLabel: VitalityMetrics['disciplineLabel'] = 'Unstable';
-    if (discipline < 40) disciplineLabel = 'Critical';
-    else if (discipline < 60) disciplineLabel = 'Unstable';
-    else if (discipline < 75) disciplineLabel = 'Controlled';
-    else if (discipline < 90) disciplineLabel = 'Strong';
-    else disciplineLabel = 'Elite';
+
+    if (isDisciplineLearning) {
+        disciplineLabel = 'Learning';
+    } else if (discipline < 40) {
+        disciplineLabel = 'Critical';
+    } else if (discipline < 60) {
+        disciplineLabel = 'Unstable';
+    } else if (discipline < 70) {
+        disciplineLabel = 'Recovering';
+    } else if (discipline < 75) {
+        disciplineLabel = 'Controlled';
+    } else if (discipline < 90) {
+        disciplineLabel = 'Strong';
+    } else {
+        disciplineLabel = 'Elite';
+    }
 
     // 5. Composite Vitality Score
     // 0.35 * Momentum + 0.25 * Efficiency + 0.20 * Discipline + 0.20 * Savings Progress
@@ -143,14 +168,20 @@ export function calculateVitality(
     }
 
     // Health Classification
-    let classification: VitalityMetrics['classification'] = isDataScarce ? 'Unstable' : 'Unstable';
-    if (isDataScarce && transactions.length === 0) {
-        classification = 'Unstable'; // Or a new "Analyzing" state if we add it
-    } else if (vitalityScore < 40) classification = 'Critical';
-    else if (vitalityScore < 60) classification = 'Unstable';
-    else if (vitalityScore < 75) classification = 'Recovering';
-    else if (vitalityScore < 90) classification = 'Healthy';
-    else classification = 'Elite';
+    let classification: VitalityMetrics['classification'] = isDataScarce ? 'Learning' : 'Unstable';
+    if (isDataScarce) {
+        classification = 'Learning';
+    } else if (vitalityScore < 40) {
+        classification = 'Critical';
+    } else if (vitalityScore < 60) {
+        classification = 'Unstable';
+    } else if (vitalityScore < 75) {
+        classification = 'Recovering';
+    } else if (vitalityScore < 90) {
+        classification = 'Healthy';
+    } else {
+        classification = 'Elite';
+    }
 
     // Insights
     if (isDataScarce) {

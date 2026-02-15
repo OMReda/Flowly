@@ -105,8 +105,8 @@ export function TransactionList({ transactions, showDelete = false, showCategori
     }
 
     return (
-        <div className="space-y-8">
-            {/* Search */}
+        <div className="space-y-6">
+            {/* Fixed Search Bar at Top */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1 group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-emerald-500 transition-colors" />
@@ -145,116 +145,91 @@ export function TransactionList({ transactions, showDelete = false, showCategori
                     <button onClick={() => setSearchQuery("")} className="mt-4 text-[9px] font-bold text-emerald-600 uppercase tracking-widest hover:underline">Clear search</button>
                 </div>
             )}
-            <div className="space-y-0">
-                <AnimatePresence mode="popLayout">
-                    {activeTransactions.slice(0, 50).map((t: Transaction, i) => (
-                        <motion.div
-                            key={t.id}
-                            layout
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 20, transition: { duration: 0.2 } }}
-                            whileHover={{ x: 1 }}
-                            transition={{
-                                type: "spring",
-                                stiffness: 400,
-                                damping: 30,
-                                opacity: { duration: 0.15 }
-                            }}
-                            className="group"
-                        >
-                            <div
-                                className="relative py-5 px-4 grid items-center transition-all duration-150 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 rounded-xl"
-                                style={{ gridTemplateColumns: 'auto 1fr auto' }}
-                            >
-                                {/* Column 1: Avatar (Reduced 15%) */}
-                                <div
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-[8px] font-bold tracking-tight text-white shrink-0 mr-4 ring-1 ring-black/5 dark:ring-white/5
-                                    ${t.type === 'income' ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-zinc-800 dark:bg-zinc-900'}
-                                `}
+
+            {/* Scrollable Transactions Container - Expanded Height */}
+            <div className="relative overflow-hidden" style={{ maxHeight: '420px' }}>
+                {/* Scrollable Transaction List */}
+                <div className="overflow-y-auto overflow-x-hidden scroll-smooth no-scrollbar" style={{ maxHeight: '420px' }}>
+                    <div className="space-y-0">
+                        <AnimatePresence mode="popLayout">
+                            {activeTransactions.slice(0, 50).map((t: Transaction, i) => (
+                                <motion.div
+                                    key={t.id}
+                                    layout
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: 20, transition: { duration: 0.2 } }}
+                                    whileHover={{ x: 1 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 400,
+                                        damping: 30,
+                                        opacity: { duration: 0.15 }
+                                    }}
+                                    className="group"
                                 >
-                                    {t.category ? t.category.substring(0, 2).toUpperCase() : '??'}
-                                </div>
-
-                                {/* Column 2: Merchant + Meta hierarchy */}
-                                <div className="min-w-0 pr-4">
-                                    <h3 className="text-[14px] font-medium text-zinc-900 dark:text-zinc-100 leading-none truncate">
-                                        {t.merchant}
-                                    </h3>
-                                    <p className="text-[12px] font-normal text-zinc-400 dark:text-zinc-500 mt-1.5 flex items-center gap-1.5 whitespace-nowrap">
-                                        <span className="capitalize">{t.category}</span>
-                                        <span className="text-zinc-200 dark:text-zinc-800">•</span>
-                                        <span className="tabular-nums">{isMounted ? new Date(t.date || "").toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : "--"}</span>
-                                        {t.is_subscription && (
-                                            <>
-                                                <span className="text-zinc-200 dark:text-zinc-800">•</span>
-                                                <Repeat className="w-3 h-3 text-zinc-300 dark:text-zinc-600" />
-                                            </>
-                                        )}
-                                    </p>
-                                </div>
-
-                                {/* Column 3: Amount (Right aligned, Calibrated color) */}
-                                <div className="flex items-center gap-4 ml-6">
-                                    <div className="text-right">
-                                        <p className={`text-[15px] tracking-tight tabular-nums transition-transform duration-100 group-hover:scale-[1.02] ${t.type === 'income'
-                                            ? 'text-emerald-600/90 dark:text-emerald-500/90 font-medium'
-                                            : (t.amount > 500 ? 'text-rose-800/80 dark:text-rose-400/70 font-semibold' : 'text-rose-600/50 dark:text-rose-400/40 font-medium')
-                                            }`}>
-                                            {t.type === 'expense' ? '−' : '+'}${Number(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                        </p>
-                                    </div>
-
-                                    {showDelete && (
-                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                                            <button
-                                                onClick={() => handleDelete(t.id)}
-                                                disabled={deletingId === t.id}
-                                                className={`p-1.5 rounded-lg transition-all ${confirmDelete === t.id
-                                                    ? 'bg-red-500 text-white'
-                                                    : 'text-zinc-300 dark:text-zinc-600 hover:text-red-500 dark:hover:text-red-400'
-                                                    } disabled:opacity-50`}
-                                            >
-                                                {deletingId === t.id ? (
-                                                    <Loader2 className="w-3 h-3 animate-spin" />
-                                                ) : confirmDelete === t.id ? (
-                                                    <Check className="w-3 h-3" />
-                                                ) : (
-                                                    <Trash2 className="w-3 h-3" />
-                                                )}
-                                            </button>
+                                    <div
+                                        className="relative py-5 px-4 grid items-center transition-all duration-150 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 rounded-xl"
+                                        style={{ gridTemplateColumns: 'auto 1fr auto' }}
+                                    >
+                                        {/* Column 1: Avatar */}
+                                        <div
+                                            className={`w-8 h-8 rounded-full flex items-center justify-center text-[8px] font-bold tracking-tight text-white shrink-0 mr-4 ring-1 ring-black/5 dark:ring-white/5
+                                            ${t.type === 'income' ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-zinc-800 dark:bg-zinc-900'}
+                                        `}
+                                        >
+                                            {t.category ? t.category.substring(0, 2).toUpperCase() : '??'}
                                         </div>
-                                    )}
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
-            </div>
 
-            <div className="mt-8 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity">
-                <div className="flex items-center gap-6 px-8 py-3 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-100/50 dark:border-zinc-800/50">
-                    <motion.button
-                        whileHover={{ y: -1 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => exportData('csv')}
-                        className="group flex items-center gap-2"
-                    >
-                        <Download className="w-3 h-3 text-zinc-400 group-hover:text-emerald-500 transition-colors" />
-                        <span className="text-[9px] font-bold text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 uppercase tracking-widest leading-none pt-[1px] transition-colors">Export CSV</span>
-                    </motion.button>
+                                        {/* Column 2: Merchant + Meta */}
+                                        <div className="min-w-0 pr-4">
+                                            <h3 className="text-[14px] font-medium text-zinc-900 dark:text-zinc-100 leading-none truncate">
+                                                {t.merchant}
+                                            </h3>
+                                            <p className="text-[12px] font-normal text-zinc-400 dark:text-zinc-500 mt-1.5 flex items-center gap-1.5 whitespace-nowrap">
+                                                <span className="capitalize">{t.category}</span>
+                                                <span className="text-zinc-200 dark:text-zinc-800">•</span>
+                                                <span className="tabular-nums">{isMounted ? new Date(t.date || "").toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : "--"}</span>
+                                            </p>
+                                        </div>
 
-                    <div className="w-[1px] h-3 bg-zinc-200 dark:bg-zinc-800" />
+                                        {/* Column 3: Amount */}
+                                        <div className="flex items-center gap-4 ml-6">
+                                            <div className="text-right">
+                                                <p className={`text-[15px] tracking-tight tabular-nums transition-transform duration-100 group-hover:scale-[1.02] ${t.type === 'income'
+                                                    ? 'text-emerald-600/90 dark:text-emerald-500/90 font-medium'
+                                                    : (t.amount > 500 ? 'text-rose-800/80 dark:text-rose-400/70 font-semibold' : 'text-rose-600/50 dark:text-rose-400/40 font-medium')
+                                                    }`}>
+                                                    {t.type === 'expense' ? '−' : '+'}${Number(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                </p>
+                                            </div>
 
-                    <motion.button
-                        whileHover={{ y: -1 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => exportData('json')}
-                        className="group flex items-center gap-2"
-                    >
-                        <Download className="w-3 h-3 text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors" />
-                        <span className="text-[9px] font-bold text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 uppercase tracking-widest leading-none pt-[1px] transition-colors">JSON</span>
-                    </motion.button>
+                                            {showDelete && (
+                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                                                    <button
+                                                        onClick={() => handleDelete(t.id)}
+                                                        disabled={deletingId === t.id}
+                                                        className={`p-1.5 rounded-lg transition-all ${confirmDelete === t.id
+                                                            ? 'bg-red-500 text-white'
+                                                            : 'text-zinc-300 dark:text-zinc-600 hover:text-red-500 dark:hover:text-red-400'
+                                                            } disabled:opacity-50`}
+                                                    >
+                                                        {deletingId === t.id ? (
+                                                            <Loader2 className="w-3 h-3 animate-spin" />
+                                                        ) : confirmDelete === t.id ? (
+                                                            <Check className="w-3 h-3" />
+                                                        ) : (
+                                                            <Trash2 className="w-3 h-3" />
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </div>
                 </div>
             </div>
         </div >

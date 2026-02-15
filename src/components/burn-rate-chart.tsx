@@ -39,6 +39,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export function BurnRateChart({ transactions = [], budget = 1000, days = 30 }: BurnRateChartProps) {
     const dailyData = getDailySpending(transactions, days);
+    const isLearning = transactions.length < 5;
 
     if (dailyData.length === 0 || dailyData.every(d => d.amount === 0 && d.accumulated === 0)) {
         return (
@@ -47,7 +48,6 @@ export function BurnRateChart({ transactions = [], budget = 1000, days = 30 }: B
                 animate={{ opacity: 1 }}
                 className="w-full h-full flex flex-col items-center justify-center p-8 relative overflow-hidden bg-zinc-50/10 dark:bg-zinc-900/5 rounded-[32px] border border-zinc-100 dark:border-zinc-800/50 group"
             >
-
                 <div className="relative z-10 flex flex-col items-center gap-6">
                     <div className="relative">
                         <motion.div
@@ -58,12 +58,7 @@ export function BurnRateChart({ transactions = [], budget = 1000, days = 30 }: B
                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                             className="w-16 h-16 rounded-[24px] bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 flex items-center justify-center relative overflow-hidden"
                         >
-                            <motion.div
-                                animate={{ rotate: [0, 5, 0, -5, 0] }}
-                                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                            >
-                                <TrendingUp className="w-6 h-6 text-emerald-500/60" />
-                            </motion.div>
+                            <TrendingUp className="w-6 h-6 text-emerald-500/20" />
                         </motion.div>
                     </div>
 
@@ -73,6 +68,31 @@ export function BurnRateChart({ transactions = [], budget = 1000, days = 30 }: B
                         </p>
                         <p className="text-[8px] font-bold tracking-[0.5em] text-zinc-300 dark:text-zinc-600 uppercase">
                             Architecture Ready
+                        </p>
+                    </div>
+                </div>
+            </motion.div>
+        );
+    }
+
+    if (isLearning) {
+        return (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="w-full h-full flex flex-col items-center justify-center p-8 relative overflow-hidden bg-zinc-50/10 dark:bg-zinc-900/5 rounded-[32px] border border-zinc-100 dark:border-zinc-800/50 group"
+            >
+                <div className="relative z-10 flex flex-col items-center gap-4">
+                    <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Learning Mode Active</span>
+                    </div>
+                    <div className="text-center space-y-1">
+                        <p className="text-sm font-serif text-zinc-400 dark:text-zinc-500 italic">
+                            Calibrating trajectory projection…
+                        </p>
+                        <p className="text-[8px] font-bold tracking-[0.3em] text-zinc-300 dark:text-zinc-600 uppercase">
+                            {transactions.length} / 5 txns recorded
                         </p>
                     </div>
                 </div>
